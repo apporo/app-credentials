@@ -1,32 +1,32 @@
 'use strict';
 
-var Devebot = require('devebot');
-var Promise = Devebot.require('bluebird');
-var lodash = Devebot.require('lodash');
-var debugx = Devebot.require('pinbug')('app-tokenify:checker');
+const Devebot = require('devebot');
+const Promise = Devebot.require('bluebird');
+const lodash = Devebot.require('lodash');
+const debugx = Devebot.require('pinbug')('app-tokenify:checker');
 
-var Service = function (params) {
+function TokenifyChecker(params) {
   debugx.enabled && debugx(' + constructor begin ...');
 
   params = params || {};
 
-  var self = this;
-  var logger = params.loggingFactory.getLogger();
-  var pluginCfg = params.sandboxConfig;
-  var authorizationCfg = pluginCfg.authorization || {};
+  let self = this;
+  let logger = params.loggingFactory.getLogger();
+  let pluginCfg = params.sandboxConfig;
+  let authorizationCfg = pluginCfg.authorization || {};
 
-  var declaredRules = authorizationCfg.permissionRules || [];
-  var compiledRules = [];
+  let declaredRules = authorizationCfg.permissionRules || [];
+  let compiledRules = [];
   lodash.forEach(declaredRules, function (rule) {
     if (rule.enabled != false) {
-      var compiledRule = lodash.omit(rule, ['url']);
+      let compiledRule = lodash.omit(rule, ['url']);
       compiledRule.urlPattern = new RegExp(rule.url || '/(.*)');
       compiledRules.push(compiledRule);
     }
   });
 
-  var permissionExtractor = null;
-  var permPath = authorizationCfg.permissionPath;
+  let permissionExtractor = null;
+  let permPath = authorizationCfg.permissionPath;
   if (lodash.isArray(permPath) && !lodash.isEmpty(permPath)) {
     debugx.enabled && debugx(' - define permissionExtractor() function from permissionPath');
     if (permPath.indexOf(pluginCfg.sessionObjectName) != 0) {
@@ -45,14 +45,14 @@ var Service = function (params) {
   }
 
   self.buildPermissionChecker = function (express) {
-    var router = express.Router();
+    let router = express.Router();
 
     router.all('*', function (req, res, next) {
-      for (var i = 0; i < compiledRules.length; i++) {
-        var rule = compiledRules[i];
+      for (let i = 0; i < compiledRules.length; i++) {
+        let rule = compiledRules[i];
         if (req.url.match(rule.urlPattern)) {
           if (lodash.isEmpty(rule.methods) || (rule.methods.indexOf(req.method) >= 0)) {
-            var permissions = permissionExtractor(req);
+            let permissions = permissionExtractor(req);
             debugx.enabled && debugx(' - extracted permissions: %s', JSON.stringify(permissions));
             if (lodash.isEmpty(rule.permission) || (lodash.isArray(permissions) && permissions.indexOf(rule.permission) >= 0)) {
               debugx.enabled && debugx(' - permission accepted: %s', rule.permission);
@@ -72,4 +72,4 @@ var Service = function (params) {
   debugx.enabled && debugx(' - constructor end!');
 };
 
-module.exports = Service;
+module.exports = TokenifyChecker;

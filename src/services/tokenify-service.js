@@ -1,20 +1,20 @@
 'use strict';
 
-var Devebot = require('devebot');
-var lodash = Devebot.require('lodash');
-var loader = Devebot.require('loader');
-var debugx = Devebot.require('pinbug')('app-tokenify:service');
+const Devebot = require('devebot');
+const lodash = Devebot.require('lodash');
+const loader = Devebot.require('loader');
+const debugx = Devebot.require('pinbug')('app-tokenify:service');
 
-var Service = function(params) {
+function TokenifyService(params) {
   debugx.enabled && debugx(' + constructor begin ...');
 
   params = params || {};
 
-  var self = this;
-  var logger = params.loggingFactory.getLogger();
-  var pluginCfg = params.sandboxConfig;
-  var contextPath = pluginCfg.contextPath || '/tokenify';
-  var authenticationPath = contextPath + '/auth';
+  let self = this;
+  let logger = params.loggingFactory.getLogger();
+  let pluginCfg = params.sandboxConfig;
+  let contextPath = pluginCfg.contextPath || '/tokenify';
+  let authenticationPath = contextPath + '/auth';
 
   self.getAuthenticatorLayer = function(branches) {
     return {
@@ -26,13 +26,13 @@ var Service = function(params) {
   }
 
   self.getHttpAuthVerifierLayer = function(branches) {
-    var layer = {
+    let layer = {
       name: 'app-tokenify-httpauth',
       middleware: params.tokenifyHandler.verifyHttpAuth,
       branches: branches,
       skipped: true
     };
-    var protectedPaths = lodash.get(pluginCfg, ['httpauth', 'protectedPaths'], []);
+    let protectedPaths = lodash.get(pluginCfg, ['httpauth', 'protectedPaths'], []);
     if (lodash.isArray(protectedPaths) && !lodash.isEmpty(protectedPaths)) {
       layer.path = protectedPaths;
       layer.skipped = (pluginCfg.enabled === false);
@@ -41,13 +41,13 @@ var Service = function(params) {
   }
 
   self.getTokenVerifierLayer = function(branches) {
-    var layer = {
+    let layer = {
       name: 'app-tokenify-token',
       middleware: params.tokenifyHandler.verifyToken,
       branches: branches,
       skipped: true
     };
-    var protectedPaths = lodash.get(pluginCfg, ['token', 'protectedPaths'], []);
+    let protectedPaths = lodash.get(pluginCfg, ['token', 'protectedPaths'], []);
     if (lodash.isArray(protectedPaths) && !lodash.isEmpty(protectedPaths)) {
       layer.path = protectedPaths;
       layer.skipped = (pluginCfg.enabled === false);
@@ -56,13 +56,13 @@ var Service = function(params) {
   }
 
   self.getJwtVerifierLayer = function(branches) {
-    var layer = {
+    let layer = {
       name: 'app-tokenify-jwt',
       middleware: params.tokenifyHandler.verifyJWT,
       branches: branches,
       skipped: true
     };
-    var protectedPaths = lodash.get(pluginCfg, ['jwt', 'protectedPaths'], []);
+    let protectedPaths = lodash.get(pluginCfg, ['jwt', 'protectedPaths'], []);
     if (lodash.isArray(protectedPaths) && !lodash.isEmpty(protectedPaths)) {
       layer.path = protectedPaths;
       layer.skipped = (pluginCfg.enabled === false);
@@ -71,13 +71,13 @@ var Service = function(params) {
   }
 
   self.getKstVerifierLayer = function(branches) {
-    var layer = {
+    let layer = {
       name: 'app-tokenify-kst',
       middleware: params.tokenifyHandler.verifyKST,
       branches: branches,
       skipped: true
     };
-    var protectedPaths = lodash.get(pluginCfg, ['kst', 'protectedPaths'], []);
+    let protectedPaths = lodash.get(pluginCfg, ['kst', 'protectedPaths'], []);
     if (lodash.isArray(protectedPaths) && !lodash.isEmpty(protectedPaths)) {
       layer.path = protectedPaths;
       layer.skipped = (pluginCfg.enabled === false);
@@ -85,14 +85,14 @@ var Service = function(params) {
     return layer;
   }
 
-  var express = params.webweaverService.express;
-  var mixVerifier = new express();
-  var mixCfg = lodash.get(pluginCfg, ['mix'], {});
+  let express = params.webweaverService.express;
+  let mixVerifier = new express();
+  let mixCfg = lodash.get(pluginCfg, ['mix'], {});
   if (!lodash.isEmpty(mixCfg)) {
     if (lodash.isObject(mixCfg) && !lodash.isArray(mixCfg)) mixCfg = [mixCfg];
     if (lodash.isArray(mixCfg)) {
       mixCfg.forEach(function(mixItem, index) {
-        var protectedPaths = mixItem.protectedPaths || [];
+        let protectedPaths = mixItem.protectedPaths || [];
         if (mixItem.enabled != false && lodash.isArray(protectedPaths) && !lodash.isEmpty(protectedPaths)) {
           mixVerifier.use(protectedPaths, params.tokenifyHandler.verifyMIX(mixItem.authMethods));
         }
@@ -109,7 +109,7 @@ var Service = function(params) {
     }
   }
 
-  var permissionChecker = params.tokenifyChecker.buildPermissionChecker(express);
+  let permissionChecker = params.tokenifyChecker.buildPermissionChecker(express);
 
   self.getAuthorizationLayer = function(branches) {
     return {
@@ -120,7 +120,7 @@ var Service = function(params) {
     }
   }
 
-  var childRack = null;
+  let childRack = null;
   if (pluginCfg.autowired !== false) {
     childRack = childRack || {
       name: 'app-tokenify-branches',
@@ -150,6 +150,6 @@ var Service = function(params) {
   debugx.enabled && debugx(' - constructor end!');
 };
 
-Service.referenceList = ['tokenifyChecker', 'tokenifyHandler', 'webweaverService'];
+TokenifyService.referenceList = ['tokenifyChecker', 'tokenifyHandler', 'webweaverService'];
 
-module.exports = Service;
+module.exports = TokenifyService;

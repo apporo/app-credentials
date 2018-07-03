@@ -1,36 +1,37 @@
 'use strict';
 
-var Devebot = require('devebot');
-var Promise = Devebot.require('bluebird');
-var lodash = Devebot.require('lodash');
-var debug = Devebot.require('pinbug');
-var debugx = debug('app-tokenify:lib:EntrypointCachedStore');
-var crypto = require('crypto');
-var NodeCache = require('node-cache');
+const Devebot = require('devebot');
+const Promise = Devebot.require('bluebird');
+const lodash = Devebot.require('lodash');
+const debug = Devebot.require('pinbug');
+const debugx = debug('app-tokenify:lib:EntrypointCachedStore');
+const crypto = require('crypto');
+const NodeCache = require('node-cache');
 
-var EntrypointCachedStore = function (params) {
+function EntrypointCachedStore(params) {
   params = params || {};
-  var self = this;
+
+  let self = this;
   this.fieldNameRef = params.fieldNameRef;
   this.secretEncrypted = params.secretEncrypted;
 
-  var credentialCache = new NodeCache({ stdTTL: 600, useClones: true });
-  var credentialKey = function (data) {
+  let credentialCache = new NodeCache({ stdTTL: 600, useClones: true });
+  let credentialKey = function (data) {
     return (data[self.fieldNameRef.scope] ? (data[self.fieldNameRef.scope] + '/') : '') +
       data[self.fieldNameRef.key];
   }
 
-  var hashCode = function (text) {
+  let hashCode = function (text) {
     if (!self.secretEncrypted) return text;
-    var hash = crypto.createHash('sha1');
+    let hash = crypto.createHash('sha1');
     hash.update(text);
     return hash.digest('hex');
   }
 
   this.authenticate = function (data, ctx) {
     debugx.enabled && debugx('authenticate(%s)', JSON.stringify(data));
-    var key = credentialKey(data);
-    var obj = credentialCache.get(key);
+    let key = credentialKey(data);
+    let obj = credentialCache.get(key);
     debugx.enabled && debugx('authenticate() - cached data', JSON.stringify(obj));
     if (obj) {
       if (obj[this.fieldNameRef.secret] === hashCode(data[this.fieldNameRef.secret])) {
@@ -46,8 +47,8 @@ var EntrypointCachedStore = function (params) {
   }
 
   this.update = function (data, result) {
-    var key = credentialKey(data);
-    var obj = lodash.pick(data, lodash.values(this.fieldNameRef));
+    let key = credentialKey(data);
+    let obj = lodash.pick(data, lodash.values(this.fieldNameRef));
     lodash.assign(obj, result);
     obj[this.fieldNameRef.secret] = hashCode(obj[this.fieldNameRef.secret]);
     debugx.enabled && debugx('update() - [%s]: %s', key, JSON.stringify(obj));

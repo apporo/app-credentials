@@ -1,19 +1,19 @@
 'use strict';
 
-var Devebot = require('devebot');
-var Promise = Devebot.require('bluebird');
-var lodash = Devebot.require('lodash');
-var debug = Devebot.require('pinbug');
-var debugx = debug('app-tokenify:lib:EntrypointConfigStore');
+const Devebot = require('devebot');
+const Promise = Devebot.require('bluebird');
+const lodash = Devebot.require('lodash');
+const debug = Devebot.require('pinbug');
+const debugx = debug('app-tokenify:lib:EntrypointConfigStore');
 
-var CommonMethods = require('./common-methods');
+let CommonMethods = require('./common-methods');
 
-var EntrypointConfigStore = function(params) {
+function EntrypointConfigStore(params) {
   params = params || {};
   this.fieldNameRef = params.fieldNameRef;
 
-  var entrypointStore = params.entrypointStore || {};
-  var entrypointList = entrypointStore.entrypoints || [];
+  let entrypointStore = params.entrypointStore || {};
+  let entrypointList = entrypointStore.entrypoints || [];
   if (!lodash.isArray(entrypointList)) entrypointList = [];
   entrypointList = lodash.filter(entrypointList, function(item) {
     return (item.enabled != false);

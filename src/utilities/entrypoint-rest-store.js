@@ -1,24 +1,24 @@
 'use strict';
 
-var fs = require('fs');
-var Devebot = require('devebot');
-var Promise = Devebot.require('bluebird');
-var lodash = Devebot.require('lodash');
-var debug = Devebot.require('pinbug');
-var debugx = debug('app-tokenify:lib:EntrypointRestStore');
-var request = require('request');
+const fs = require('fs');
+const Devebot = require('devebot');
+const Promise = Devebot.require('bluebird');
+const lodash = Devebot.require('lodash');
+const debug = Devebot.require('pinbug');
+const debugx = debug('app-tokenify:lib:EntrypointRestStore');
+const request = require('request');
 
-var EntrypointRestStore = function (params) {
+function EntrypointRestStore(params) {
   params = params || {};
 
-  var sources = lodash.get(params, ['entrypointStoreRest', 'sources'], []);
+  let sources = lodash.get(params, ['entrypointStoreRest', 'sources'], []);
   sources = lodash.filter(sources, function (source) {
     return (source.enabled != false);
   });
   lodash.forEach(sources, function (source) {
     if (lodash.isEmpty(source.requestOpts)) {
       debugx.enabled && debugx(' - requestOpts not found, creates a new one');
-      var requestOpts = source.requestOpts = { url: source.url, method: 'POST', json: true };
+      let requestOpts = source.requestOpts = { url: source.url, method: 'POST', json: true };
       if (source.auth && source.auth.type && source.auth.config && source.auth.config[source.auth.type]) {
         if (source.auth.type == 'basic') {
           requestOpts.auth = {
@@ -42,7 +42,7 @@ var EntrypointRestStore = function (params) {
       }
       if (source.ssl && source.ssl.type && source.ssl.config && source.ssl.config[source.ssl.type]) {
         if (source.ssl.type == 'cert') {
-          var clientCertOptions = {
+          let clientCertOptions = {
             cert: fs.readFileSync(source.ssl.config[source.ssl.type].certFile),
             key: fs.readFileSync(source.ssl.config[source.ssl.type].keyFile)
           }
@@ -55,7 +55,7 @@ var EntrypointRestStore = function (params) {
           requestOpts.agentOptions = clientCertOptions;
         } else
           if (source.ssl.type == 'certserverside') {
-            var serverCertOptions = {
+            let serverCertOptions = {
               ca: fs.readFileSync(source.ssl.config[source.ssl.type].caFile),
               cert: fs.readFileSync(source.ssl.config[source.ssl.type].certFile),
               key: fs.readFileSync(source.ssl.config[source.ssl.type].keyFile)
@@ -81,7 +81,7 @@ var EntrypointRestStore = function (params) {
     }
     return Promise.any(sources.map(function (source) {
       return new Promise(function (resolve, reject) {
-        var requestOpts = lodash.assign({ body: credential }, source.requestOpts);
+        let requestOpts = lodash.assign({ body: credential }, source.requestOpts);
         debugx.enabled && debugx(' - Post to [%s] a request object: %s', source.url, JSON.stringify(requestOpts));
         request(requestOpts, function (err, response, body) {
           if (err) {
@@ -102,7 +102,7 @@ var EntrypointRestStore = function (params) {
             });
           }
 
-          var result = (lodash.isFunction(source.transform)) ? source.transform(body) : body;
+          let result = (lodash.isFunction(source.transform)) ? source.transform(body) : body;
           debugx.enabled && debugx(' - return from [%s] after transfrom: %s', source.url, JSON.stringify(result));
           return resolve(result);
         });

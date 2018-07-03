@@ -1,28 +1,28 @@
 'use strict';
 
-var fs = require('fs');
-var Devebot = require('devebot');
-var Promise = Devebot.require('bluebird');
-var lodash = Devebot.require('lodash');
-var loader = Devebot.require('loader');
-var debugx = Devebot.require('pinbug')('app-tokenify:storage');
+const fs = require('fs');
+const Devebot = require('devebot');
+const Promise = Devebot.require('bluebird');
+const lodash = Devebot.require('lodash');
+const loader = Devebot.require('loader');
+const debugx = Devebot.require('pinbug')('app-tokenify:storage');
 
-var EntrypointCachedStore = require('../utilities/entrypoint-cached-store');
-var EntrypointConfigStore = require('../utilities/entrypoint-config-store');
-var EntrypointFileStore = require('../utilities/entrypoint-file-store');
-var EntrypointRestStore = require('../utilities/entrypoint-rest-store');
+const EntrypointCachedStore = require('../utilities/entrypoint-cached-store');
+const EntrypointConfigStore = require('../utilities/entrypoint-config-store');
+const EntrypointFileStore = require('../utilities/entrypoint-file-store');
+const EntrypointRestStore = require('../utilities/entrypoint-rest-store');
 
-var Service = function (params) {
+function TokenifyStorage(params) {
   debugx.enabled && debugx(' + constructor begin ...');
 
   params = params || {};
 
-  var self = this;
-  var logger = params.loggingFactory.getLogger();
-  var pluginCfg = params.sandboxConfig;
+  let self = this;
+  let logger = params.loggingFactory.getLogger();
+  let pluginCfg = params.sandboxConfig;
 
-  var entrypointCachedStore = new EntrypointCachedStore(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']));
-  var ep = {};
+  let entrypointCachedStore = new EntrypointCachedStore(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']));
+  let ep = {};
   ep.entrypointConfigStore = new EntrypointConfigStore(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStore']));
   ep.entrypointFileStore = new EntrypointFileStore(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreFile']));
   ep.entrypointRestStore = new EntrypointRestStore(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreRest']));
@@ -50,16 +50,17 @@ var Service = function (params) {
   };
 
   self.getApiSecret = function (data, opts) {
+    let result;
     data = data || {};
     opts = opts || {};
 
-    var result = ep.entrypointConfigStore.getApiSecret(data, opts);
+    result = ep.entrypointConfigStore.getApiSecret(data, opts);
     result.store = 'entrypointConfigStore';
     if (result.status == 0) {
       return Promise.resolve(result);
     }
 
-    var result = ep.entrypointFileStore.getApiSecret(data, opts);
+    result = ep.entrypointFileStore.getApiSecret(data, opts);
     result.store = 'entrypointFileStore';
     if (result.status == 0) {
       return Promise.resolve(result);
@@ -74,4 +75,4 @@ var Service = function (params) {
   debugx.enabled && debugx(' - constructor end!');
 };
 
-module.exports = Service;
+module.exports = TokenifyStorage;

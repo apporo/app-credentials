@@ -1,46 +1,46 @@
 'use strict';
 
-var crypto = require('crypto');
-var Devebot = require('devebot');
-var Promise = Devebot.require('bluebird');
-var lodash = Devebot.require('lodash');
-var loader = Devebot.require('loader');
-var debugx = Devebot.require('pinbug')('app-tokenify:handler');
+const crypto = require('crypto');
+const Devebot = require('devebot');
+const Promise = Devebot.require('bluebird');
+const lodash = Devebot.require('lodash');
+const loader = Devebot.require('loader');
+const debugx = Devebot.require('pinbug')('app-tokenify:handler');
 
-var basicAuth = require('basic-auth');
-var jwt = require('jsonwebtoken');
+const basicAuth = require('basic-auth');
+const jwt = require('jsonwebtoken');
 
-var Service = function (params) {
+function TokenifyHandler(params) {
   debugx.enabled && debugx(' + constructor begin ...');
 
   params = params || {};
 
-  var self = this;
-  var logger = params.loggingFactory.getLogger();
-  var pluginCfg = params.sandboxConfig;
+  let self = this;
+  let logger = params.loggingFactory.getLogger();
+  let pluginCfg = params.sandboxConfig;
 
-  var methodCfg = {};
-  var httpauthCfg = methodCfg['httpauth'] = lodash.get(pluginCfg, ['httpauth'], {});
-  var tokenCfg = methodCfg['token'] = lodash.get(pluginCfg, ['token'], {});
-  var jwtCfg = methodCfg['jwt'] = lodash.get(pluginCfg, ['jwt'], {});
-  var kstCfg = methodCfg['kst'] = lodash.get(pluginCfg, ['kst'], {});
+  let methodCfg = {};
+  let httpauthCfg = methodCfg['httpauth'] = lodash.get(pluginCfg, ['httpauth'], {});
+  let tokenCfg = methodCfg['token'] = lodash.get(pluginCfg, ['token'], {});
+  let jwtCfg = methodCfg['jwt'] = lodash.get(pluginCfg, ['jwt'], {});
+  let kstCfg = methodCfg['kst'] = lodash.get(pluginCfg, ['kst'], {});
 
   debugx.enabled && debugx(' - appTokenify.httpauthCfg: %s', JSON.stringify(httpauthCfg));
   debugx.enabled && debugx(' - appTokenify.tokenCfg: %s', JSON.stringify(tokenCfg));
   debugx.enabled && debugx(' - appTokenify.jwtCfg: %s', JSON.stringify(jwtCfg));
   debugx.enabled && debugx(' - appTokenify.kstCfg: %s', JSON.stringify(kstCfg));
 
-  var getRequestId = function(req) {
+  let getRequestId = function(req) {
     return req && req[pluginCfg.tracingRequestName || 'requestId'];
   }
 
-  var defaultAuthMethods = ['httpauth', 'token', 'jwt', 'kst'];
-  var enabledAuthMethods = lodash.filter(defaultAuthMethods, function (authMethod) {
+  let defaultAuthMethods = ['httpauth', 'token', 'jwt', 'kst'];
+  let enabledAuthMethods = lodash.filter(defaultAuthMethods, function (authMethod) {
     return (methodCfg[authMethod] && (methodCfg[authMethod].enabled != false));
   });
   debugx.enabled && debugx(' - Enabled authentication methods: %s', JSON.stringify(enabledAuthMethods));
 
-  var verifier = {};
+  let verifier = {};
 
   self.verifyHttpAuth = function (req, res, next) {
     if (httpauthCfg.enabled == false && process.env.NODE_ENV != 'production') {
@@ -65,10 +65,10 @@ var Service = function (params) {
     })
   };
 
-  var verifyHttpAuth = verifier['httpauth'] = function (req) {
+  let verifyHttpAuth = verifier['httpauth'] = function (req) {
     debugx.enabled && debugx(' - check credentials name/pass for Basic authentication');
 
-    var credentials = basicAuth(req);
+    let credentials = basicAuth(req);
     if (!credentials || !credentials.name || !credentials.pass) {
       return Promise.reject({
         success: false,
@@ -78,8 +78,8 @@ var Service = function (params) {
     }
     debugx.enabled && debugx(' - Basic authentication credentials: %s', JSON.stringify(credentials));
 
-    var credential = {};
-    var parts = credentials.name.split("/");
+    let credential = {};
+    let parts = credentials.name.split("/");
     if (parts.length >= 2) {
       credential[pluginCfg.fieldNameRef.scope] = parts[0];
       credential[pluginCfg.fieldNameRef.key] = parts[1];
@@ -95,7 +95,7 @@ var Service = function (params) {
       result = result || {};
       if (result.status == 0) {
         delete credential[pluginCfg.fieldNameRef.secret];
-        var sessionObject = {
+        let sessionObject = {
           user: lodash.assign(credential, lodash.omit(result, ['status']))
         };
         debugx.enabled && debugx(' - SessionObject will be saved: %s', JSON.stringify(sessionObject));
@@ -138,11 +138,11 @@ var Service = function (params) {
     })
   };
 
-  var verifyToken = verifier['token'] = function (req) {
+  let verifyToken = verifier['token'] = function (req) {
     debugx.enabled && debugx(' - check credentials token');
 
-    var credential = {};
-    var tokenField = pluginCfg.fieldNameRef.token || 'token';
+    let credential = {};
+    let tokenField = pluginCfg.fieldNameRef.token || 'token';
     credential[tokenField] = req.headers[tokenField];
     debugx.enabled && debugx(' - Internal authentication credential: %s', JSON.stringify(credential));
 
@@ -152,7 +152,7 @@ var Service = function (params) {
       result = result || {};
       if (result.status == 0) {
         delete credential[pluginCfg.fieldNameRef.secret];
-        var sessionObject = {
+        let sessionObject = {
           user: lodash.assign(credential, lodash.omit(result, ['status']))
         };
         debugx.enabled && debugx(' - SessionObject will be saved: %s', JSON.stringify(sessionObject));
@@ -178,7 +178,7 @@ var Service = function (params) {
     debugx.enabled && debugx(' + Client make an authentication');
     logger.log('debug', 'Client authenticate username:%s - Request[%s]', req.body.username, getRequestId(req));
 
-    var credential = lodash.pick(req.body, lodash.values(pluginCfg.fieldNameRef));
+    let credential = lodash.pick(req.body, lodash.values(pluginCfg.fieldNameRef));
 
     params.tokenifyStorage.authenticate(credential, {
       traceRequestId: getRequestId(req)
@@ -186,11 +186,11 @@ var Service = function (params) {
       result = result || {};
       if (result.status == 0) {
         delete credential[pluginCfg.fieldNameRef.secret];
-        var tokenObject = {
+        let tokenObject = {
           user: lodash.assign(credential, lodash.omit(result, ['status']))
         };
         debugx.enabled && debugx(' - TokenObject will be saved: %s', JSON.stringify(tokenObject));
-        var token = jwt.sign(tokenObject, jwtCfg.secretkey || 't0ps3cr3t', {
+        let token = jwt.sign(tokenObject, jwtCfg.secretkey || 't0ps3cr3t', {
           expiresIn: jwtCfg.expiresIn || 86400 // expires in 24 hours
         });
         logger.log('debug', 'Successful authentication. Created token:%s - Request[%s]', token, getRequestId(req));
@@ -238,13 +238,13 @@ var Service = function (params) {
     })
   };
 
-  var verifyJWT = verifier['jwt'] = function (req) {
+  let verifyJWT = verifier['jwt'] = function (req) {
     debugx.enabled && debugx(' - check header/url-params/post-params for JWT token');
-    var reqHeaders = req.headers || {}, reqParams = req.params || {}, reqBody = req.body || {};
-    var token = reqHeaders[jwtCfg.tokenHeaderName] || reqParams[jwtCfg.tokenQueryName] || reqBody[jwtCfg.tokenQueryName];
+    let reqHeaders = req.headers || {}, reqParams = req.params || {}, reqBody = req.body || {};
+    let token = reqHeaders[jwtCfg.tokenHeaderName] || reqParams[jwtCfg.tokenQueryName] || reqBody[jwtCfg.tokenQueryName];
     if (token) {
       logger.log('debug', 'JWT token found: [%s] - Request[%s]', token, getRequestId(req));
-      var tokenOpts = {
+      let tokenOpts = {
         ignoreExpiration: jwtCfg.ignoreExpiration || false
       };
       debugx.enabled && debugx(' - decode token, verifies secret and checks exp');
@@ -298,10 +298,10 @@ var Service = function (params) {
     })
   };
 
-  var verifyKST = verifier['kst'] = function (req) {
+  let verifyKST = verifier['kst'] = function (req) {
     debugx.enabled && debugx(' - check header/url-params/post-params for KST token');
-    var reqHeaders = req.headers || {};
-    var authHeaders = {
+    let reqHeaders = req.headers || {};
+    let authHeaders = {
       key: reqHeaders[kstCfg.keyHeaderName],
       nonce: reqHeaders[kstCfg.nonceHeaderName],
       timestamp: reqHeaders[kstCfg.timestampHeaderName],
@@ -313,8 +313,8 @@ var Service = function (params) {
       }, {
           traceRequestId: getRequestId(req)
         }).then(function (result) {
-          var sessionObject = {};
-          var signatureOpts = {
+          let sessionObject = {};
+          let signatureOpts = {
             key: authHeaders.key,
             timestamp: authHeaders.timestamp,
             nonce: authHeaders.nonce,
@@ -326,7 +326,7 @@ var Service = function (params) {
             signatureOpts.data = req.body;
           }
           debugx.enabled && debugx(' - Building signature parameters: %s', JSON.stringify(signatureOpts));
-          var signature = buildSignature(signatureOpts);
+          let signature = buildSignature(signatureOpts);
           debugx.enabled && debugx(' - Server-built signature: %s', signature);
 
           if (signature != authHeaders.signature) {
@@ -359,30 +359,30 @@ var Service = function (params) {
     }
   };
 
-  var buildSignature = function (input) {
+  let buildSignature = function (input) {
     input = input || {};
-    var keys = Object.keys(input);
-    for (var i = 0; i < keys.length; i++) {
+    let keys = Object.keys(input);
+    for (let i = 0; i < keys.length; i++) {
       if ((keys[i] != 'data') && (input[keys[i]] == null)) return null;
     }
 
-    var auth_words = [input.key, input.timestamp, input.nonce, input.method.toUpperCase(), input.path];
+    let auth_words = [input.key, input.timestamp, input.nonce, input.method.toUpperCase(), input.path];
     if (input.data) {
       auth_words.push(JSON.stringify(input.data));
     }
-    var auth_string = auth_words.join('&');
+    let auth_string = auth_words.join('&');
 
-    var hmac = crypto.createHmac('sha256', input.secret);
+    let hmac = crypto.createHmac('sha256', input.secret);
     hmac.update(auth_string);
-    var auth_signature = hmac.digest('base64');
+    let auth_signature = hmac.digest('base64');
 
     return auth_signature;
   };
 
-  var validateTimestamp = function (timestamp, minutes) {
+  let validateTimestamp = function (timestamp, minutes) {
     try {
-      var t1 = Math.floor((new Date().valueOf() - minutes * 60000) / 1000).toString();
-      var t2 = parseInt(timestamp);
+      let t1 = Math.floor((new Date().valueOf() - minutes * 60000) / 1000).toString();
+      let t2 = parseInt(timestamp);
       return (t1 < t2);
     } catch (exception) {
       return false;
@@ -392,7 +392,7 @@ var Service = function (params) {
   self.verifyMIX = function (authMethods) {
     authMethods = authMethods || [];
 
-    var mixtureAuthMethods = enabledAuthMethods;
+    let mixtureAuthMethods = enabledAuthMethods;
     if (lodash.isArray(authMethods) && !lodash.isEmpty(authMethods)) {
       mixtureAuthMethods = lodash.intersection(mixtureAuthMethods, authMethods);
     }
@@ -426,6 +426,6 @@ var Service = function (params) {
   debugx.enabled && debugx(' - constructor end!');
 };
 
-Service.referenceList = ['tokenifyStorage'];
+TokenifyHandler.referenceList = ['tokenifyStorage'];
 
-module.exports = Service;
+module.exports = TokenifyHandler;
