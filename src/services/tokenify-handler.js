@@ -42,15 +42,15 @@ function TokenifyHandler(params) {
 
   self.verifyHttpAuth = function (req, res, next) {
     if (httpauthCfg.enabled == false && process.env.NODE_ENV != 'production') {
-      L.log('debug', 'The HttpAuth verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
+      L.has('debug') && L.log('debug', 'The HttpAuth verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
       req[pluginCfg.sessionObjectName] = { enabled: false };
       return next();
     }
     verifyHttpAuth(req).then(function () {
-      L.log('debug', 'HttpAuth verification passed - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'HttpAuth verification passed - Request[%s]', getRequestId(req));
       next();
     }).catch(function (error) {
-      L.log('debug', 'HttpAuth verification failed, return 401 - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'HttpAuth verification failed, return 401 - Request[%s]', getRequestId(req));
       res.set('WWW-Authenticate', 'Basic realm="tokenify"');
       res.set('Content-Type', 'application/json');
       if (lodash.isObject(error)) {
@@ -94,7 +94,7 @@ function TokenifyHandler(params) {
         let sessionObject = {
           user: lodash.assign(credential, lodash.omit(result, ['status']))
         };
-        L.log('debug', 'Created sessionObject:%s - Request[%s]', JSON.stringify(sessionObject), getRequestId(req));
+        L.has('debug') && L.log('debug', 'Created sessionObject:%s - Request[%s]', JSON.stringify(sessionObject), getRequestId(req));
         req[pluginCfg.sessionObjectName] = sessionObject;
         return Promise.resolve();
       }
@@ -114,15 +114,15 @@ function TokenifyHandler(params) {
 
   self.verifyToken = function (req, res, next) {
     if (tokenCfg.enabled == false && process.env.NODE_ENV != 'production') {
-      L.log('debug', 'The Token verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
+      L.has('debug') && L.log('debug', 'The Token verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
       req[pluginCfg.sessionObjectName] = { enabled: false };
       return next();
     }
     verifyToken(req).then(function () {
-      L.log('debug', 'Token verification passed - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'Token verification passed - Request[%s]', getRequestId(req));
       next();
     }).catch(function (error) {
-      L.log('debug', 'Token verification failed, return 401 - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'Token verification failed, return 401 - Request[%s]', getRequestId(req));
       if (lodash.isObject(error)) {
         res.status(401).json(error);
       } else {
@@ -148,7 +148,7 @@ function TokenifyHandler(params) {
         let sessionObject = {
           user: lodash.assign(credential, lodash.omit(result, ['status']))
         };
-        L.log('debug', 'Created sessionObject:%s - Request[%s]', JSON.stringify(sessionObject), getRequestId(req));
+        L.has('debug') && L.log('debug', 'Created sessionObject:%s - Request[%s]', JSON.stringify(sessionObject), getRequestId(req));
         req[pluginCfg.sessionObjectName] = sessionObject;
         return Promise.resolve();
       }
@@ -167,7 +167,7 @@ function TokenifyHandler(params) {
   };
 
   self.authenticate = function (req, res, next) {
-    L.log('debug', 'Client authenticate username:%s - Request[%s]', req.body.username, getRequestId(req));
+    L.has('debug') && L.log('debug', 'Client authenticate username:%s - Request[%s]', req.body.username, getRequestId(req));
 
     let credential = lodash.pick(req.body, lodash.values(pluginCfg.fieldNameRef));
 
@@ -184,7 +184,7 @@ function TokenifyHandler(params) {
         let token = jwt.sign(tokenObject, jwtCfg.secretkey || 't0ps3cr3t', {
           expiresIn: jwtCfg.expiresIn || 86400 // expires in 24 hours
         });
-        L.log('debug', 'Successful authentication. Created token:%s - Request[%s]', token, getRequestId(req));
+        L.has('debug') && L.log('debug', 'Successful authentication. Created token:%s - Request[%s]', token, getRequestId(req));
         res.json({
           success: true,
           message: 'Successful authentication.',
@@ -192,32 +192,32 @@ function TokenifyHandler(params) {
         });
         return 0;
       }
-      L.log('debug', 'Authentication failed. status:%s - Request[%s]', result.status, getRequestId(req));
+      L.has('debug') && L.log('debug', 'Authentication failed. status:%s - Request[%s]', result.status, getRequestId(req));
       res.json({
         success: false,
         message: result.message || 'Authentication failed. Invalid username or password'
       });
       return 1;
     }).catch(function (error) {
-      L.log('debug', 'Authentication failed. status:%s - Request[%s]', error.status, getRequestId(req));
+      L.has('debug') && L.log('debug', 'Authentication failed. status:%s - Request[%s]', error.status, getRequestId(req));
       error.success = false;
       res.status(400).json(error);
     }).finally(function () {
-      L.log('debug', 'Authentication finish - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'Authentication finish - Request[%s]', getRequestId(req));
     });
   };
 
   self.verifyJWT = function (req, res, next) {
     if (jwtCfg.enabled == false && process.env.NODE_ENV != 'production') {
-      L.log('debug', 'The JWT verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
+      L.has('debug') && L.log('debug', 'The JWT verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
       req[pluginCfg.sessionObjectName] = { enabled: false };
       return next();
     }
     verifyJWT(req).then(function () {
-      L.log('debug', 'JWT verification passed - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'JWT verification passed - Request[%s]', getRequestId(req));
       next();
     }).catch(function (error) {
-      L.log('debug', 'JWT verification failed, return 403 - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'JWT verification failed, return 403 - Request[%s]', getRequestId(req));
       if (lodash.isObject(error)) {
         res.status(403).json(error);
       } else {
@@ -231,29 +231,29 @@ function TokenifyHandler(params) {
     let reqHeaders = req.headers || {}, reqParams = req.params || {}, reqBody = req.body || {};
     let token = reqHeaders[jwtCfg.tokenHeaderName] || reqParams[jwtCfg.tokenQueryName] || reqBody[jwtCfg.tokenQueryName];
     if (token) {
-      L.log('debug', 'JWT token found: [%s] - Request[%s]', token, getRequestId(req));
+      L.has('debug') && L.log('debug', 'JWT token found: [%s] - Request[%s]', token, getRequestId(req));
       let tokenOpts = {
         ignoreExpiration: jwtCfg.ignoreExpiration || false
       };
-      L.log('debug', 'Call jwt.verify() with options: %s - Request[%s]', JSON.stringify(tokenOpts), getRequestId(req));
+      L.has('debug') && L.log('debug', 'Call jwt.verify() with options: %s - Request[%s]', JSON.stringify(tokenOpts), getRequestId(req));
       return new Promise(function (resolve, reject) {
         jwt.verify(token, jwtCfg.secretkey || 't0ps3cr3t', tokenOpts, function (err, decoded) {
           if (err) {
-            L.log('debug', 'Verification failed, error: %s - Request[%s]', JSON.stringify(err), getRequestId(req));
+            L.has('debug') && L.log('debug', 'Verification failed, error: %s - Request[%s]', JSON.stringify(err), getRequestId(req));
             return reject({
               success: false,
               type: 'JWT',
               message: 'Failed to authenticate token.'
             });
           } else {
-            L.log('debug', 'Verification success, token: %s - Request[%s]', JSON.stringify(decoded), getRequestId(req));
+            L.has('debug') && L.log('debug', 'Verification success, token: %s - Request[%s]', JSON.stringify(decoded), getRequestId(req));
             req[pluginCfg.sessionObjectName] = decoded;
             return resolve();
           }
         });
       });
     } else {
-      L.log('debug', 'JWT token not found - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'JWT token not found - Request[%s]', getRequestId(req));
       return Promise.reject({
         success: false,
         type: 'JWT',
@@ -264,15 +264,15 @@ function TokenifyHandler(params) {
 
   self.verifyKST = function (req, res, next) {
     if (kstCfg.enabled == false && process.env.NODE_ENV != 'production') {
-      L.log('debug', 'The KST verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
+      L.has('debug') && L.log('debug', 'The KST verification is bypassed in NODE_ENV[%s] - Request[%s]', process.env.NODE_ENV, getRequestId(req));
       req[pluginCfg.sessionObjectName] = { enabled: false };
       return next();
     }
     verifyKST(req).then(function () {
-      L.log('debug', 'KST verification passed - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'KST verification passed - Request[%s]', getRequestId(req));
       next();
     }).catch(function (error) {
-      L.log('debug', 'KST verification failed, return 403 - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'KST verification failed, return 403 - Request[%s]', getRequestId(req));
       if (lodash.isObject(error)) {
         res.status(403).json(error);
       } else {
@@ -333,7 +333,7 @@ function TokenifyHandler(params) {
           return Promise.resolve();
         })
     } else {
-      L.log('debug', 'KST token is invalid - Request[%s]', getRequestId(req));
+      L.has('debug') && L.log('debug', 'KST token is invalid - Request[%s]', getRequestId(req));
       return Promise.reject({
         success: false,
         type: 'KST',
@@ -381,7 +381,7 @@ function TokenifyHandler(params) {
     }
 
     return function (req, res, next) {
-      L.log('debug', 'MIX verification: %s - Request[%s]', JSON.stringify(mixtureAuthMethods), getRequestId(req));
+      L.has('debug') && L.log('debug', 'MIX verification: %s - Request[%s]', JSON.stringify(mixtureAuthMethods), getRequestId(req));
       if (lodash.isEmpty(mixtureAuthMethods)) {
         next();
         return;
@@ -389,11 +389,11 @@ function TokenifyHandler(params) {
       Promise.any(lodash.map(mixtureAuthMethods, function (authMethod) {
         return verifier[authMethod](req);
       })).then(function () {
-        L.log('debug', 'The MIX verification passed - Request[%s]', getRequestId(req));
+        L.has('debug') && L.log('debug', 'The MIX verification passed - Request[%s]', getRequestId(req));
         next();
       }).catch(Promise.AggregateError, function (error) {
         (pluginCfg.verbose === true) && console.log("verifyMIX() -> Promise.any(): ", error);
-        L.log('debug', 'The MIX verification failed, return 401 - Request[%s]', getRequestId(req));
+        L.has('debug') && L.log('debug', 'The MIX verification failed, return 401 - Request[%s]', getRequestId(req));
         res.set('WWW-Authenticate', 'Basic realm="tokenify"');
         res.set('Content-Type', 'application/json');
         res.status(401).send({

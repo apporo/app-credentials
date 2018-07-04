@@ -4,20 +4,19 @@ const fs = require('fs');
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
-const debug = Devebot.require('pinbug');
-const debugx = debug('app-tokenify:lib:EntrypointRestStore');
 const request = require('request');
 
 function EntrypointRestStore(params) {
   params = params || {};
 
+  let {L, T} = params;
   let sources = lodash.get(params, ['entrypointStoreRest', 'sources'], []);
   sources = lodash.filter(sources, function (source) {
     return (source.enabled != false);
   });
   lodash.forEach(sources, function (source) {
     if (lodash.isEmpty(source.requestOpts)) {
-      debugx.enabled && debugx(' - requestOpts not found, creates a new one');
+      L.has('silly') && L.log('silly', 'requestOpts not found, creates a new one');
       let requestOpts = source.requestOpts = { url: source.url, method: 'POST', json: true };
       if (source.auth && source.auth.type && source.auth.config && source.auth.config[source.auth.type]) {
         if (source.auth.type == 'basic') {
@@ -67,9 +66,9 @@ function EntrypointRestStore(params) {
           }
       }
     } else {
-      debugx.enabled && debugx(' - requestOpts has already existed');
+      L.has('silly') && L.log('silly', 'requestOpts has already existed');
     }
-    debugx.enabled && debugx(' - source.requestOpts: %s', JSON.stringify(source.requestOpts));
+    L.has('silly') && L.log('silly', 'source.requestOpts: %s', JSON.stringify(source.requestOpts));
   });
 
   this.authenticate = function (credential, ctx) {
@@ -82,10 +81,10 @@ function EntrypointRestStore(params) {
     return Promise.any(sources.map(function (source) {
       return new Promise(function (resolve, reject) {
         let requestOpts = lodash.assign({ body: credential }, source.requestOpts);
-        debugx.enabled && debugx(' - Post to [%s] a request object: %s', source.url, JSON.stringify(requestOpts));
+        L.has('silly') && L.log('silly', 'Post to [%s] a request object: %s', source.url, JSON.stringify(requestOpts));
         request(requestOpts, function (err, response, body) {
           if (err) {
-            debugx.enabled && debugx(' - Request to [%s] failed. Error: %s', source.url, JSON.stringify(err));
+            L.has('silly') && L.log('silly', 'Request to [%s] failed. Error: %s', source.url, JSON.stringify(err));
             return reject({
               url: source.url,
               status: -1,
@@ -93,7 +92,7 @@ function EntrypointRestStore(params) {
             });
           }
 
-          debugx.enabled && debugx(' - return from [%s]: %s', source.url, JSON.stringify(body));
+          L.has('silly') && L.log('silly', 'return from [%s]: %s', source.url, JSON.stringify(body));
           if (lodash.isEmpty(body)) {
             return reject({
               url: source.url,
@@ -103,7 +102,7 @@ function EntrypointRestStore(params) {
           }
 
           let result = (lodash.isFunction(source.transform)) ? source.transform(body) : body;
-          debugx.enabled && debugx(' - return from [%s] after transfrom: %s', source.url, JSON.stringify(result));
+          L.has('silly') && L.log('silly', 'return from [%s] after transfrom: %s', source.url, JSON.stringify(result));
           return resolve(result);
         });
       });

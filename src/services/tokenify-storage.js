@@ -17,13 +17,14 @@ function TokenifyStorage(params) {
   let self = this;
   let L = params.loggingFactory.getLogger();
   let T = params.loggingFactory.getTracer();
+  let C = { L, T };
   let pluginCfg = params.sandboxConfig;
 
-  let entrypointCachedStore = new EntrypointCachedStore(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']));
+  let entrypointCachedStore = new EntrypointCachedStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']), C));
   let ep = {};
-  ep.entrypointConfigStore = new EntrypointConfigStore(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStore']));
-  ep.entrypointFileStore = new EntrypointFileStore(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreFile']));
-  ep.entrypointRestStore = new EntrypointRestStore(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreRest']));
+  ep.entrypointConfigStore = new EntrypointConfigStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStore']), C));
+  ep.entrypointFileStore = new EntrypointFileStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreFile']), C));
+  ep.entrypointRestStore = new EntrypointRestStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreRest']), C));
 
   self.authenticate = function (data, opts) {
     data = data || {};

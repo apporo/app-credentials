@@ -4,13 +4,12 @@ const fs = require('fs');
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
-const debug = Devebot.require('pinbug');
-const debugx = debug('app-tokenify:lib:EntrypointFileStore');
 const CommonMethods = require('./common-methods');
 
 function EntrypointFileStore(params) {
   params = params || {};
 
+  let {L, T} = params;
   this.fieldNameRef = params.fieldNameRef;
 
   let readEntrypointFileStore = function(configFile, context) {
@@ -19,9 +18,9 @@ function EntrypointFileStore(params) {
       store = JSON.parse(fs.readFileSync(configFile, 'utf8'));
     } catch (err) {
       if (err.code == 'ENOENT') {
-        debugx.enabled && debugx(' - entrypointStoreFile[%s] not found', configFile);
+        L.has('silly') && L.log('silly', 'entrypointStoreFile[%s] not found', configFile);
       } else {
-        debugx.enabled && debugx(' - error: %s', JSON.stringify(err));
+        L.has('silly') && L.log('silly', 'error: %s', JSON.stringify(err));
       }
     }
     return store;

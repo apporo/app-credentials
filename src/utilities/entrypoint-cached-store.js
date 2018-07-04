@@ -3,8 +3,6 @@
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
-const debug = Devebot.require('pinbug');
-const debugx = debug('app-tokenify:lib:EntrypointCachedStore');
 const crypto = require('crypto');
 const NodeCache = require('node-cache');
 
@@ -12,6 +10,7 @@ function EntrypointCachedStore(params) {
   params = params || {};
 
   let self = this;
+  let {L, T} = params;
   this.fieldNameRef = params.fieldNameRef;
   this.secretEncrypted = params.secretEncrypted;
 
@@ -29,10 +28,10 @@ function EntrypointCachedStore(params) {
   }
 
   this.authenticate = function (data, ctx) {
-    debugx.enabled && debugx('authenticate(%s)', JSON.stringify(data));
+    L.has('silly') && L.log('silly', 'authenticate(%s)', JSON.stringify(data));
     let key = credentialKey(data);
     let obj = credentialCache.get(key);
-    debugx.enabled && debugx('authenticate() - cached data', JSON.stringify(obj));
+    L.has('silly') && L.log('silly', 'authenticate() - cached data', JSON.stringify(obj));
     if (obj) {
       if (obj[this.fieldNameRef.secret] === hashCode(data[this.fieldNameRef.secret])) {
         obj.status = 0;
@@ -51,7 +50,7 @@ function EntrypointCachedStore(params) {
     let obj = lodash.pick(data, lodash.values(this.fieldNameRef));
     lodash.assign(obj, result);
     obj[this.fieldNameRef.secret] = hashCode(obj[this.fieldNameRef.secret]);
-    debugx.enabled && debugx('update() - [%s]: %s', key, JSON.stringify(obj));
+    L.has('silly') && L.log('silly', 'update() - [%s]: %s', key, JSON.stringify(obj));
     credentialCache.set(key, obj);
   }
 }

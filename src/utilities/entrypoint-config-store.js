@@ -3,10 +3,7 @@
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
-const debug = Devebot.require('pinbug');
-const debugx = debug('app-tokenify:lib:EntrypointConfigStore');
-
-let CommonMethods = require('./common-methods');
+const CommonMethods = require('./common-methods');
 
 function EntrypointConfigStore(params) {
   params = params || {};
