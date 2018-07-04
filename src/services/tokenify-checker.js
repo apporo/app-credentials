@@ -3,7 +3,6 @@
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
-const debugx = Devebot.require('pinbug')('app-tokenify:checker');
 
 function TokenifyChecker(params) {
   params = params || {};
@@ -27,19 +26,19 @@ function TokenifyChecker(params) {
   let permissionExtractor = null;
   let permPath = authorizationCfg.permissionPath;
   if (lodash.isArray(permPath) && !lodash.isEmpty(permPath)) {
-    debugx.enabled && debugx(' - define permissionExtractor() function from permissionPath');
+    L.has('silly') && L.log('silly', ' - define permissionExtractor() function from permissionPath');
     if (permPath.indexOf(pluginCfg.sessionObjectName) != 0) {
       permPath = [pluginCfg.sessionObjectName].concat(permPath);
     }
-    debugx.enabled && debugx(' - permissionPath: %s', JSON.stringify(permPath));
+    L.has('silly') && L.log('silly', ' - permissionPath: %s', JSON.stringify(permPath));
     permissionExtractor = function (req) {
       return lodash.get(req, permPath, []);
     }
   } else if (lodash.isFunction(authorizationCfg.permissionExtractor)) {
-    debugx.enabled && debugx(' - use the configured permissionExtractor() function');
+    L.has('silly') && L.log('silly', ' - use the configured permissionExtractor() function');
     permissionExtractor = authorizationCfg.permissionExtractor;
   } else {
-    debugx.enabled && debugx(' - use the null returned permissionExtractor() function');
+    L.has('silly') && L.log('silly', ' - use the null returned permissionExtractor() function');
     permissionExtractor = function (req) { return null; }
   }
 
@@ -52,9 +51,9 @@ function TokenifyChecker(params) {
         if (req.url.match(rule.urlPattern)) {
           if (lodash.isEmpty(rule.methods) || (rule.methods.indexOf(req.method) >= 0)) {
             let permissions = permissionExtractor(req);
-            debugx.enabled && debugx(' - extracted permissions: %s', JSON.stringify(permissions));
+            L.has('silly') && L.log('silly', ' - extracted permissions: %s', JSON.stringify(permissions));
             if (lodash.isEmpty(rule.permission) || (lodash.isArray(permissions) && permissions.indexOf(rule.permission) >= 0)) {
-              debugx.enabled && debugx(' - permission accepted: %s', rule.permission);
+              L.has('silly') && L.log('silly', ' - permission accepted: %s', rule.permission);
               return next();
             } else {
               return res.status(403).json({ success: false, message: 'Insufficient permission to grant access' });

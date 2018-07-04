@@ -5,7 +5,6 @@ const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
 const loader = Devebot.require('loader');
-const debugx = Devebot.require('pinbug')('app-tokenify:storage');
 
 const EntrypointCachedStore = require('../utilities/entrypoint-cached-store');
 const EntrypointConfigStore = require('../utilities/entrypoint-config-store');
@@ -39,7 +38,7 @@ function TokenifyStorage(params) {
         return result;
       });
     }, entrypointCachedStore.authenticate(data, opts)).then(function (result) {
-      debugx.enabled && debugx('final check: %s', JSON.stringify(result));
+      L.has('silly') && L.log('silly', 'final check: %s', JSON.stringify(result));
       if (result.status == 0) {
         if (result.type != 'token') entrypointCachedStore.update(data, result);
         return Promise.resolve(result);

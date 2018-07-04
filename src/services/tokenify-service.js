@@ -3,7 +3,6 @@
 const Devebot = require('devebot');
 const lodash = Devebot.require('lodash');
 const loader = Devebot.require('loader');
-const debugx = Devebot.require('pinbug')('app-tokenify:service');
 
 function TokenifyService(params) {
   params = params || {};
@@ -141,7 +140,7 @@ function TokenifyService(params) {
 
   self.inject = self.push = function(layerOrBranches) {
     if (childRack) {
-      debugx.enabled && debugx(' - push layer(s) to %s', childRack.name);
+      L.has('silly') && L.log('silly', ' - push layer(s) to %s', childRack.name);
       params.webweaverService.wire(childRack.middleware, layerOrBranches, childRack.trails);
     }
   }
