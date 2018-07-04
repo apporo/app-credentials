@@ -1,39 +1,12 @@
 'use strict';
 
-var contextPath = '/tokenify';
-var sessionObjectName = 'tokenify';
+var sessionObjectName = 'credentials';
 
 module.exports = {
   application: {
-    baseHost: 'localhost:7979',
-    contextPath: contextPath,
-    sessionObjectName: sessionObjectName
   },
   plugins: {
-    appTokenify: {
-      contextPath: contextPath,
-      sessionObjectName: sessionObjectName,
-      tracingRequestName: 'traceRequestId',
-      httpauth: {
-        protectedPaths: [contextPath + '/httpauth/session-info', contextPath + '/httpauth/authorized*']
-      },
-      jwt: {
-        protectedPaths: [contextPath + '/jwt/session-info', contextPath + '/jwt/authorized*']
-      },
-      kst: {
-        protectedPaths: [contextPath + '/kst/session-info', contextPath + '/kst/authorized*']
-      },
-      mix: [
-        {
-          authMethods: ["httpauth","jwt"],
-          protectedPaths: [contextPath + '/mix1/session-info', contextPath + '/mix1/authorized*']
-        },
-        {
-          enabled: false,
-          authMethods: ["httpauth"],
-          protectedPaths: [contextPath + '/mix2/session-info', contextPath + '/mix2/authorized*']
-        }
-      ],
+    appCredentials: {
       fieldNameRef: {
         scope: 'realm',
         key: 'username',
@@ -70,12 +43,12 @@ module.exports = {
         ]
       },
       authorization: {
-        permissionPath: ['user', 'permissions'],
+        permissionPath: [sessionObjectName, 'user', 'permissions'],
         permissionExtractor: function(req) {
-          if (!req || !req.tokenify || !req.tokenify.user || !req.tokenify.user.permissions) {
+          if (!req || !req[sessionObjectName] || !req[sessionObjectName].user || !req[sessionObjectName].user.permissions) {
             return null;
           }
-          return req.tokenify.user.permissions;
+          return req[sessionObjectName].user.permissions;
         },
         permissionRules: [
           {

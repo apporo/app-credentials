@@ -1,9 +1,9 @@
 {
-  "name": "app-tokenify",
+  "name": "app-credentials",
   "version": "0.2.2",
-  "description": "Devebot token-based authentication layerware",
+  "description": "Devebot credentials store layerware",
   "license": "MIT",
-  "homepage": "https://github.com/apporo/app-tokenify.git",
+  "homepage": "https://github.com/apporo/app-credentials.git",
   "author": {
     "name": "apporo",
     "email": "apporo@devebot.com",

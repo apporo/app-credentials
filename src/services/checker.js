@@ -4,7 +4,7 @@ const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
 
-function TokenifyChecker(params) {
+function Checker(params) {
   params = params || {};
 
   let self = this;
@@ -26,10 +26,6 @@ function TokenifyChecker(params) {
   let permissionExtractor = null;
   let permPath = authorizationCfg.permissionPath;
   if (lodash.isArray(permPath) && !lodash.isEmpty(permPath)) {
-    L.has('silly') && L.log('silly', ' - define permissionExtractor() function from permissionPath');
-    if (permPath.indexOf(pluginCfg.sessionObjectName) != 0) {
-      permPath = [pluginCfg.sessionObjectName].concat(permPath);
-    }
     L.has('silly') && L.log('silly', ' - permissionPath: %s', JSON.stringify(permPath));
     permissionExtractor = function (req) {
       return lodash.get(req, permPath, []);
@@ -68,4 +64,4 @@ function TokenifyChecker(params) {
   };
 };
 
-module.exports = TokenifyChecker;
+module.exports = Checker;

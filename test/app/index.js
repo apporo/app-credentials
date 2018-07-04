@@ -5,7 +5,7 @@ var path = require('path');
 var app = require('devebot').launchApplication({
   appRootPath: __dirname
 }, [{
-  name: 'app-tokenify',
+  name: 'app-credentials',
   path: path.join(__dirname, '../../index.js')
 }]);
 

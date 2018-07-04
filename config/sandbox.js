@@ -1,28 +1,7 @@
 module.exports = {
   plugins: {
-    appTokenify: {
+    appCredentials: {
       enabled: true,
-      contextPath: '/tokenify',
-      sessionObjectName: 'tokenify',
-      tracingRequestName: 'requestId',
-      httpauth: {
-        protectedPaths: []
-      },
-      jwt: {
-        protectedPaths: [],
-        tokenHeaderName: 'x-access-token',
-        tokenQueryName: 'token',
-        expiresIn: 86400,
-        ignoreExpiration: false,
-        secretkey: 'sup3rs3cr3tp4ssw0rd'
-      },
-      kst: {
-        protectedPaths: [],
-        keyHeaderName: 'Auth-Key',
-        nonceHeaderName: 'Auth-Nonce',
-        timestampHeaderName: 'Auth-Timestamp',
-        signatureHeaderName: 'Auth-Signature'
-      },
       fieldNameRef: {
         scope: 'realm',
         key: 'key',

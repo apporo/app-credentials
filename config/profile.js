@@ -1,6 +1,6 @@
 module.exports = {
   newFeatures: {
-    appTokenify: {
+    appCredentials: {
       logoliteEnabled: true,
       sandboxConfig: true
     }

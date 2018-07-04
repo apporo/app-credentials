@@ -1,3 +1,3 @@
-# app-tokenify
+# app-credentials
 
-> Devebot token-based authentication layerware
+> Devebot credentials store layerware

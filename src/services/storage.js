@@ -11,7 +11,7 @@ const EntrypointConfigStore = require('../utilities/entrypoint-config-store');
 const EntrypointFileStore = require('../utilities/entrypoint-file-store');
 const EntrypointRestStore = require('../utilities/entrypoint-rest-store');
 
-function TokenifyStorage(params) {
+function Storage(params) {
   params = params || {};
 
   let self = this;
@@ -72,4 +72,4 @@ function TokenifyStorage(params) {
   };
 };
 
-module.exports = TokenifyStorage;
+module.exports = Storage;
