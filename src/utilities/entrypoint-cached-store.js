@@ -5,6 +5,7 @@ const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
 const crypto = require('crypto');
 const NodeCache = require('node-cache');
+const CommonMethods = require('./common-methods');
 
 function EntrypointCachedStore(params) {
   params = params || {};
@@ -28,10 +29,14 @@ function EntrypointCachedStore(params) {
   }
 
   this.authenticate = function (data, ctx) {
-    L.has('silly') && L.log('silly', 'authenticate(%s)', JSON.stringify(data));
+    L.has('silly') && L.log('silly', 'authenticate(%s)', JSON.stringify(CommonMethods.hidePassword(data, {
+      fieldName: self.fieldNameRef.secret
+    })));
     let key = credentialKey(data);
     let obj = credentialCache.get(key);
-    L.has('silly') && L.log('silly', 'authenticate() - cached data', JSON.stringify(obj));
+    L.has('silly') && L.log('silly', 'authenticate() - cached data: %s', JSON.stringify(CommonMethods.hidePassword(obj, {
+      fieldName: self.fieldNameRef.secret
+    })));
     if (obj) {
       if (obj[this.fieldNameRef.secret] === hashCode(data[this.fieldNameRef.secret])) {
         obj.status = 0;
@@ -50,7 +55,9 @@ function EntrypointCachedStore(params) {
     let obj = lodash.pick(data, lodash.values(this.fieldNameRef));
     lodash.assign(obj, result);
     obj[this.fieldNameRef.secret] = hashCode(obj[this.fieldNameRef.secret]);
-    L.has('silly') && L.log('silly', 'update() - [%s]: %s', key, JSON.stringify(obj));
+    L.has('silly') && L.log('silly', 'update() - [%s]: %s', key, JSON.stringify(CommonMethods.hidePassword(obj, {
+      fieldName: self.fieldNameRef.secret
+    })));
     credentialCache.set(key, obj);
   }
 }
