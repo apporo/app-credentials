@@ -1,11 +1,10 @@
 'use strict';
 
-const fs = require('fs');
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
 const loader = Devebot.require('loader');
-
+const fs = require('fs');
 const EntrypointCachedStore = require('../utilities/entrypoint-cached-store');
 const EntrypointConfigStore = require('../utilities/entrypoint-config-store');
 const EntrypointFileStore = require('../utilities/entrypoint-file-store');
@@ -18,15 +17,15 @@ function Storage(params) {
   let L = params.loggingFactory.getLogger();
   let T = params.loggingFactory.getTracer();
   let C = { L, T };
-  let pluginCfg = params.sandboxConfig;
+  let pluginCfg = params.sandboxConfig || {};
 
-  let entrypointCachedStore = new EntrypointCachedStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']), C));
   let ep = {};
   ep.entrypointConfigStore = new EntrypointConfigStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStore']), C));
   ep.entrypointFileStore = new EntrypointFileStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreFile']), C));
   ep.entrypointRestStore = new EntrypointRestStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreRest']), C));
+  let entrypointCachedStore = new EntrypointCachedStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']), C));
 
-  self.authenticate = function (data, opts) {
+  this.authenticate = function (data, opts) {
     data = data || {};
     opts = opts || {};
 
@@ -48,7 +47,7 @@ function Storage(params) {
     });
   };
 
-  self.getApiSecret = function (data, opts) {
+  this.getApiSecret = function (data, opts) {
     let result;
     data = data || {};
     opts = opts || {};

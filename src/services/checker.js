@@ -38,7 +38,7 @@ function Checker(params) {
     permissionExtractor = function (req) { return null; }
   }
 
-  self.buildPermissionChecker = function (express) {
+  this.buildPermissionChecker = function (express) {
     let router = express.Router();
 
     router.all('*', function (req, res, next) {

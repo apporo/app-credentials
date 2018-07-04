@@ -1,3 +1,7 @@
+'use strict';
+
+var path = require('path');
+
 module.exports = {
   plugins: {
     appCredentials: {
@@ -21,7 +25,7 @@ module.exports = {
           }
         ]
       },
-      entrypointStoreFile: require('path').join(__dirname, '../data/entrypointstore.json'),
+      entrypointStoreFile: path.join(__dirname, '../data/entrypointstore.json'),
       entrypointStoreRest: {
         sources: [
           {
@@ -47,15 +51,15 @@ module.exports = {
               type: 'none',
               config: {
                 cert: {
-                  certFile: require('path').join(__dirname, '../data/ssl/client-cert.pem'),
-                  keyFile: require('path').join(__dirname, '../data/ssl/client-key.pem'),
+                  certFile: path.join(__dirname, '../data/ssl/client-cert.pem'),
+                  keyFile: path.join(__dirname, '../data/ssl/client-key.pem'),
                   passphrase: 'secure4keyfile',
                   securityOptions: 'SSL_OP_NO_SSLv3'
                 },
                 certserverside: {
-                  caFile: require('path').join(__dirname, '../data/ssl/ca.pem'),
-                  certFile: require('path').join(__dirname, '../data/ssl/server-cert.pem'),
-                  keyFile: require('path').join(__dirname, '../data/ssl/server-key.pem'),
+                  caFile: path.join(__dirname, '../data/ssl/ca.pem'),
+                  certFile: path.join(__dirname, '../data/ssl/server-cert.pem'),
+                  keyFile: path.join(__dirname, '../data/ssl/server-key.pem'),
                   passphrase: 'secure4keyfile'
                 }
               }

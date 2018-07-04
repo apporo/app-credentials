@@ -1,9 +1,9 @@
 'use strict';
 
-const fs = require('fs');
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
+const fs = require('fs');
 const request = require('request');
 
 function EntrypointRestStore(params) {
