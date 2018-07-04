@@ -1,0 +1,11 @@
+{
+  "name": "private-test",
+  "version": "0.0.0",
+  "author": "devebot",
+  "license": "MIT",
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "chai": "^3.5.0",
+    "mock-http-server": "0.0.4"
+  }
+}
