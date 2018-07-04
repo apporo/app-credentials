@@ -13,12 +13,11 @@ const EntrypointFileStore = require('../utilities/entrypoint-file-store');
 const EntrypointRestStore = require('../utilities/entrypoint-rest-store');
 
 function TokenifyStorage(params) {
-  debugx.enabled && debugx(' + constructor begin ...');
-
   params = params || {};
 
   let self = this;
-  let logger = params.loggingFactory.getLogger();
+  let L = params.loggingFactory.getLogger();
+  let T = params.loggingFactory.getTracer();
   let pluginCfg = params.sandboxConfig;
 
   let entrypointCachedStore = new EntrypointCachedStore(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']));
@@ -71,8 +70,6 @@ function TokenifyStorage(params) {
       message: 'Entrypoint key/secret not found'
     });
   };
-
-  debugx.enabled && debugx(' - constructor end!');
 };
 
 module.exports = TokenifyStorage;

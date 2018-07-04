@@ -24,8 +24,8 @@
     "clean": "rm -rf ./lib",
     "prepublish": "npm run clean && NODE_ENV=production npm run build",
     "pretest": "npm run clean && NODE_ENV=test npm run build",
-    "test": "cucumber-js ./test/**/*.feature",
-    "verify": "npm run prepublish && cucumber-js ./test/**/*.feature"
+    "test": "cucumber-js ./test/bdd/features/*.feature",
+    "verify": "npm run prepublish && cucumber-js ./test/bdd/features/*.feature"
   },
   "keywords": [
     "devebot",

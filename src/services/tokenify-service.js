@@ -6,12 +6,11 @@ const loader = Devebot.require('loader');
 const debugx = Devebot.require('pinbug')('app-tokenify:service');
 
 function TokenifyService(params) {
-  debugx.enabled && debugx(' + constructor begin ...');
-
   params = params || {};
 
   let self = this;
-  let logger = params.loggingFactory.getLogger();
+  let L = params.loggingFactory.getLogger();
+  let T = params.loggingFactory.getTracer();
   let pluginCfg = params.sandboxConfig;
   let contextPath = pluginCfg.contextPath || '/tokenify';
   let authenticationPath = contextPath + '/auth';
@@ -146,8 +145,6 @@ function TokenifyService(params) {
       params.webweaverService.wire(childRack.middleware, layerOrBranches, childRack.trails);
     }
   }
-
-  debugx.enabled && debugx(' - constructor end!');
 };
 
 TokenifyService.referenceList = ['tokenifyChecker', 'tokenifyHandler', 'webweaverService'];

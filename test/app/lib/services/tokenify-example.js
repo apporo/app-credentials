@@ -9,13 +9,10 @@ var lodash = Devebot.require('lodash');
 var debug = Devebot.require('pinbug');
 var debuglog = debug('example:app-tokenify:example');
 
-var Service = function(params) {
-  debuglog.enabled && debuglog(' + constructor begin ...');
-
+function TokenifyExample(params) {
   params = params || {};
 
   var self = this;
-
   var express = params.webweaverService.express;
 
   var pluginCfg = lodash.get(params, ['sandboxConfig'], {});
@@ -113,10 +110,8 @@ var Service = function(params) {
   });
 
   params.tokenifyService.push(layers);
-
-  debuglog.enabled && debuglog(' - constructor end!');
 };
 
-Service.referenceList = ['tokenifyService', 'webweaverService'];
+TokenifyExample.referenceList = ['tokenifyService', 'webweaverService'];
 
-module.exports = Service;
+module.exports = TokenifyExample;

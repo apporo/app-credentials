@@ -6,12 +6,11 @@ const lodash = Devebot.require('lodash');
 const debugx = Devebot.require('pinbug')('app-tokenify:checker');
 
 function TokenifyChecker(params) {
-  debugx.enabled && debugx(' + constructor begin ...');
-
   params = params || {};
 
   let self = this;
-  let logger = params.loggingFactory.getLogger();
+  let L = params.loggingFactory.getLogger();
+  let T = params.loggingFactory.getTracer();
   let pluginCfg = params.sandboxConfig;
   let authorizationCfg = pluginCfg.authorization || {};
 
@@ -68,8 +67,6 @@ function TokenifyChecker(params) {
 
     return router;
   };
-
-  debugx.enabled && debugx(' - constructor end!');
 };
 
 module.exports = TokenifyChecker;
