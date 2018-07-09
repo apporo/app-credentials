@@ -59,17 +59,6 @@ function Checker(params) {
     }
     return passed;
   }
-
-  this.buildPermissionChecker = function (express) {
-    let router = express.Router();
-    router.all('*', function (req, res, next) {
-      let passed = self.checkPermissions(req);
-      if (passed === null) return next();
-      if (passed) return next();
-      return res.status(403).json({ success: false, message: 'Insufficient permission to grant access' });
-    });
-    return router;
-  };
 };
 
 module.exports = Checker;
