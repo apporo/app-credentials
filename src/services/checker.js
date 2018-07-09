@@ -26,15 +26,15 @@ function Checker(params) {
   let permissionExtractor = null;
   let permPath = authorizationCfg.permissionPath;
   if (lodash.isArray(permPath) && !lodash.isEmpty(permPath)) {
-    L.has('silly') && L.log('silly', ' - permissionPath: %s', JSON.stringify(permPath));
+    L.has('silly') && L.log('silly', 'permissionPath: %s', JSON.stringify(permPath));
     permissionExtractor = function (req) {
       return lodash.get(req, permPath, []);
     }
   } else if (lodash.isFunction(authorizationCfg.permissionExtractor)) {
-    L.has('silly') && L.log('silly', ' - use the configured permissionExtractor() function');
+    L.has('silly') && L.log('silly', 'use the configured permissionExtractor() function');
     permissionExtractor = authorizationCfg.permissionExtractor;
   } else {
-    L.has('silly') && L.log('silly', ' - use the null returned permissionExtractor() function');
+    L.has('silly') && L.log('silly', 'use the null returned permissionExtractor() function');
     permissionExtractor = function (req) { return null; }
   }
 
@@ -47,9 +47,9 @@ function Checker(params) {
         if (req.url.match(rule.urlPattern)) {
           if (lodash.isEmpty(rule.methods) || (rule.methods.indexOf(req.method) >= 0)) {
             let permissions = permissionExtractor(req);
-            L.has('silly') && L.log('silly', ' - extracted permissions: %s', JSON.stringify(permissions));
+            L.has('silly') && L.log('silly', 'extracted permissions: %s', JSON.stringify(permissions));
             if (lodash.isEmpty(rule.permission) || (lodash.isArray(permissions) && permissions.indexOf(rule.permission) >= 0)) {
-              L.has('silly') && L.log('silly', ' - permission accepted: %s', rule.permission);
+              L.has('silly') && L.log('silly', 'permission accepted: %s', rule.permission);
               return next();
             } else {
               return res.status(403).json({ success: false, message: 'Insufficient permission to grant access' });
