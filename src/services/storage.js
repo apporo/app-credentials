@@ -30,8 +30,8 @@ function Storage(params) {
     opts = opts || {};
 
     return Promise.reduce(Object.keys(ep), function (result, entrypointName) {
-      if (result.status == 0) return Promise.resolve(result);
-      if (result.status == 1) return Promise.reject(result);
+      if (result.status === 0) return Promise.resolve(result);
+      if (result.status === 1) return Promise.reject(result);
       return ep[entrypointName].authenticate(data, opts).then(function (result) {
         result[pluginCfg.fieldNameRef.key] = data[pluginCfg.fieldNameRef.key];
         result.store = entrypointName;
@@ -39,11 +39,11 @@ function Storage(params) {
       });
     }, entrypointCachedStore.authenticate(data, opts)).then(function (result) {
       L.has('silly') && L.log('silly', 'final check: %s', JSON.stringify(result));
-      if (result.status == 0) {
+      if (result.status === 0) {
         if (result.type != 'token') entrypointCachedStore.update(data, result);
         return Promise.resolve(result);
       }
-      if (result.status != 0) return Promise.reject(result);
+      if (result.status !== 0) return Promise.reject(result);
     });
   };
 
