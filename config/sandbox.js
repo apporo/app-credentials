@@ -9,7 +9,8 @@ module.exports = {
       fieldNameRef: {
         scope: 'realm',
         key: 'key',
-        secret: 'secret'
+        secret: 'secret',
+        token: 'accessToken'
       },
       entrypointStore: {
         entrypoints: [
@@ -72,6 +73,19 @@ module.exports = {
         permissionPath: [],
         permissionExtractor: function(req) { return []; },
         permissionRules: []
+      }
+    }
+  },
+  bridges: {
+    mongojs: {
+      appCredentials: {
+        manipulator: {
+          connection_options: {
+            host: '127.0.0.1',
+            port: '27017',
+            name: 'credentials'
+          }
+        }
       }
     }
   }

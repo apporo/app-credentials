@@ -43,10 +43,10 @@ function EntrypointCachedStore(params) {
         return (obj);
       } else {
         credentialCache.del(key);
-        return ({ status: 2 });
+        return ({ status: -1 });
       }
     } else {
-      return ({ status: 2 });
+      return ({ status: -2 });
     }
   }
 

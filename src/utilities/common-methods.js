@@ -4,6 +4,7 @@ const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
 const bcrypt = require('bcryptjs');
+const STATUS = require('./common-status');
 
 module.exports = {
   authenticateOnHash: function(data, opts) {
@@ -16,19 +17,19 @@ module.exports = {
       return bcrypt_compare(data[this.fieldNameRef.secret], entrypointItem.secret).then(function(ok) {
         if (ok) {
           return {
-            status: 0,
+            status: STATUS.OK,
             message: 'Successful authentication.'
           }
         } else {
           return {
-            status: 1,
+            status: STATUS.INCORRECT_PASSWORD,
             message: 'Authentication failed. Wrong secret.'
           }
         }
       });
     } else {
       return Promise.resolve({
-        status: 2,
+        status: STATUS.USER_NOT_IN_STORE,
         message: 'Authentication failed. Key not found.'
       });
     }
@@ -41,12 +42,12 @@ module.exports = {
 
     if (that.entrypointHash[data[that.fieldNameRef.key]]) {
       let entrypointItem = that.entrypointHash[data[that.fieldNameRef.key]];
-      let output = { status: 0 };
+      let output = { status: STATUS.OK };
       output[that.fieldNameRef.key] = entrypointItem.key;
       output[that.fieldNameRef.secret] = entrypointItem.secret;
       return output;
     } else {
-      let output = { status: 1 };
+      let output = { status: STATUS.USER_NOT_IN_STORE };
       output[that.fieldNameRef.key] = data[that.fieldNameRef.key];
       return output;
     }

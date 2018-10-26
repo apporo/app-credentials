@@ -73,8 +73,8 @@ function EntrypointRestStore(params) {
 
   this.authenticate = function (credential, ctx) {
     if (lodash.isEmpty(sources)) {
-      return Promise.reject({
-        status: 2,
+      return Promise.resolve({
+        status: -3,
         message: 'Entrypoint source list is empty'
       });
     }

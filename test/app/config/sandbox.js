@@ -17,7 +17,7 @@ module.exports = {
         entrypoints: [
           {
             "key": "static1",
-            "secret": "$2a$10$hl4zIIfRYkI752hmVSm5yutLmqDk6FFQcqTDBgZocXH5uTUosDUnm"
+            "secret": "$2a$10$F1RyCJL6CaoyROLRcmQNlOKNahoYiIlxPQHmOuHk65JtkcNguKG0."
           },
           {
             "key": "static2",
@@ -30,10 +30,16 @@ module.exports = {
         ]
       },
       entrypointStoreFile: require('path').join(__dirname, '../data/entrypointstore.json'),
+      entrypointStoreMongodb: {
+        credentialsCollectionName: 'OAuthAppAccessTokens',
+        tokenFieldName: 'accessToken',
+        expiredTimeFieldName: 'expires',
+        returnedFieldNames: ['accessToken', 'expires']
+      },
       entrypointStoreRest: {
         sources: [
           {
-            enabled: true,
+            enabled: false,
             url: 'http://localhost:9000/auth',
             auth: {
               type: 'none'
@@ -58,6 +64,19 @@ module.exports = {
             permission: 'user'
           }
         ]
+      }
+    }
+  },
+  bridges: {
+    mongojs: {
+      appCredentials: {
+        manipulator: {
+          connection_options: {
+            host: '127.0.0.1',
+            port: 28018,
+            name: 'app-credentials'
+          }
+        }
       }
     }
   }

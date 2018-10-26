@@ -1,6 +1,6 @@
 {
   "name": "app-credentials",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Devebot credentials store layerware",
   "license": "MIT",
   "homepage": "https://github.com/apporo/app-credentials.git",
@@ -24,20 +24,24 @@
     "clean": "rm -rf ./lib",
     "prepublish": "npm run clean && NODE_ENV=production npm run build",
     "pretest": "npm run clean && NODE_ENV=test npm run build",
-    "test": "cucumber-js ./test/bdd/features/*.feature",
-    "verify": "npm run prepublish && cucumber-js ./test/bdd/features/*.feature"
+    "test": "mocha --recursive ./test/tdd/*-test.js",
+    "verify": "npm run prepublish && mocha --recursive ./test/tdd/*-test.js"
   },
   "keywords": [
     "devebot",
     "devebot-plugin"
   ],
   "peerDependencies": {
-    "devebot": "^0.2.6"
+    "devebot": "^0.2.6",
+    "devebot-co-mongojs": "^0.2.0"
   },
   "dependencies": {
     "bcryptjs": "^2.3.0",
     "devebot": "^0.2.6",
+    "devebot-co-mongojs": "^0.2.0",
+    "hide-secret": "^0.1.2",
     "node-cache": "^4.1.1",
+    "node-fetch": "^2.2.0",
     "request": "^2.75.0"
   },
   "devDependencies": {
