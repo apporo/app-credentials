@@ -8,15 +8,17 @@ const STATUS = require('./common-status');
 function EntrypointMongodbStore(params) {
   params = params || {};
 
-  let {L, T, fieldNameRef, entrypointStoreMongodb, mongoManipulator} = params;
-  let credentialsCollectionName = entrypointStoreMongodb.credentialsCollectionName || 'accounts';
-  let tokenFieldName = entrypointStoreMongodb.tokenFieldName || fieldNameRef.token || 'accessToken';
-  let usernameFieldName = entrypointStoreMongodb.usernameFieldName || fieldNameRef.key || 'username';
-  let passwordFieldName = entrypointStoreMongodb.passwordFieldName || fieldNameRef.secret || 'password';
-  let expiredTimeFieldName = entrypointStoreMongodb.expiredTimeFieldName;
-  let returnedFieldNames = entrypointStoreMongodb.returnedFieldNames;
+  let {L, T, fieldNameRef, entrypointStoreMongodb: storeCfg, mongoManipulator} = params;
+
+  storeCfg = storeCfg || {};
+  let credentialsCollectionName = storeCfg.credentialsCollectionName || 'accounts';
+  let tokenFieldName = storeCfg.tokenFieldName || fieldNameRef.token || 'accessToken';
+  let usernameFieldName = storeCfg.usernameFieldName || fieldNameRef.key || 'username';
+  let passwordFieldName = storeCfg.passwordFieldName || fieldNameRef.secret || 'password';
+  let expiredTimeFieldName = storeCfg.expiredTimeFieldName;
+  let returnedFieldNames = storeCfg.returnedFieldNames;
   if (!lodash.isArray(returnedFieldNames)) returnedFieldNames = null;
-  let transformOutput = entrypointStoreMongodb.transformOutput;
+  let transformOutput = storeCfg.transformOutput;
   if (!lodash.isFunction(transformOutput)) transformOutput = null;
 
   this.authenticate = function (credential, ctx) {
@@ -38,9 +40,11 @@ function EntrypointMongodbStore(params) {
         r = returnedFieldNames ? lodash.pick(r, returnedFieldNames) : r;
         r.status = STATUS.OK;
         if (expiredTimeFieldName && r[expiredTimeFieldName]) {
-          if (new Date(r[expiredTimeFieldName]).getTime() < Date.now()) {
+          let expired = new Date(r[expiredTimeFieldName]);
+          if (expired.getTime() < Date.now()) {
             r.status = STATUS.HAS_EXPIRED;
           }
+          r[expiredTimeFieldName] = expired.toISOString();
         }
       } else {
         r = { status: STATUS.USER_NOT_IN_STORE };

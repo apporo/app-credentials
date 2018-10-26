@@ -6,11 +6,18 @@ const lodash = Devebot.require('lodash');
 const loader = Devebot.require('loader');
 const fs = require('fs');
 const hideSecret = require('hide-secret');
-const EntrypointCachedStore = require('../utilities/entrypoint-cached-store');
+const CachedStore = require('../utilities/entrypoint-cached-store');
 const EntrypointConfigStore = require('../utilities/entrypoint-config-store');
 const EntrypointFileStore = require('../utilities/entrypoint-file-store');
 const EntrypointMongodbStore = require('../utilities/entrypoint-mongodb-store');
 const EntrypointRestStore = require('../utilities/entrypoint-rest-store');
+
+const STORE_MAPPING = {
+  "config": { cfgname: "entrypointStore", label: "entrypointConfigStore" },
+  "file": { cfgname: "entrypointFileStore", label: "entrypointStoreFile" },
+  "mongodb": { cfgname: "entrypointMongodbStore", label: "entrypointStoreMongodb" },
+  "rest": { cfgname: "entrypointRestStore", label: "entrypointStoreRest" }
+}
 
 function Storage(params) {
   params = params || {};
@@ -28,14 +35,20 @@ function Storage(params) {
   ep.entrypointFileStore = new EntrypointFileStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreFile']), C));
   ep.entrypointMongodbStore = new EntrypointMongodbStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreMongodb']), {mongoManipulator}, C));
   ep.entrypointRestStore = new EntrypointRestStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreRest']), C));
-  let entrypointCachedStore = new EntrypointCachedStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']), C));
+  let cachedStore = new CachedStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']), C));
 
   this.authenticate = function (data, opts) {
     data = data || {};
     opts = opts || {};
 
-    let p = Promise.reduce(Object.keys(ep), function (result, entrypointName) {
-      if (result.status != null && result.status >= 0) return Promise.resolve(result);
+    let entrypoints = Object.keys(ep);
+    if (lodash.isArray(opts.entrypoints)) {
+      entrypoints = opts.entrypoints;
+    } 
+
+    let p = Promise.reduce(entrypoints, function (result, entrypointName) {
+      if (!(entrypointName in ep)) return result;
+      if (result.status != null && result.status >= 0) return result;
       return ep[entrypointName].authenticate(data, opts).then(function (result) {
         if (data[pluginCfg.fieldNameRef.key]) {
           result[pluginCfg.fieldNameRef.key] = data[pluginCfg.fieldNameRef.key];
@@ -43,12 +56,12 @@ function Storage(params) {
         result.store = entrypointName;
         return result;
       });
-    }, entrypointCachedStore.authenticate(data, opts));
+    }, cachedStore.authenticate(data, opts));
 
     p = p.then(function (result) {
       L.has('silly') && L.log('silly', 'final check: %s', JSON.stringify(result));
       if (result.status === 0) {
-        if (result.type != 'token') entrypointCachedStore.update(data, result);
+        if (result.type != 'token') cachedStore.update(data, result);
         return Promise.resolve(result);
       }
       if (result.status !== 0) return Promise.reject(result);
