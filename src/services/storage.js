@@ -5,18 +5,15 @@ const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
 const loader = Devebot.require('loader');
 const fs = require('fs');
+const util = require('util');
 const hideSecret = require('hide-secret');
 const CachedStore = require('../utilities/entrypoint-cached-store');
-const EntrypointConfigStore = require('../utilities/entrypoint-config-store');
-const EntrypointFileStore = require('../utilities/entrypoint-file-store');
-const EntrypointMongodbStore = require('../utilities/entrypoint-mongodb-store');
-const EntrypointRestStore = require('../utilities/entrypoint-rest-store');
 
-const STORE_MAPPING = {
+const STORE_MAPPINGS = {
   "config": { cfgname: "entrypointStore", label: "entrypointConfigStore" },
-  "file": { cfgname: "entrypointFileStore", label: "entrypointStoreFile" },
-  "mongodb": { cfgname: "entrypointMongodbStore", label: "entrypointStoreMongodb" },
-  "rest": { cfgname: "entrypointRestStore", label: "entrypointStoreRest" }
+  "file": { cfgname: "entrypointStoreFile", label: "entrypointFileStore" },
+  "mongodb": { cfgname: "entrypointStoreMongodb", label: "entrypointMongodbStore" },
+  "rest": { cfgname: "entrypointStoreRest", label: "entrypointRestStore" }
 }
 
 function Storage(params) {
@@ -30,11 +27,11 @@ function Storage(params) {
 
   let mongoManipulator = params["mongojs#manipulator"];
 
-  let ep = {};
-  ep.entrypointConfigStore = new EntrypointConfigStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStore']), C));
-  ep.entrypointFileStore = new EntrypointFileStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreFile']), C));
-  ep.entrypointMongodbStore = new EntrypointMongodbStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreMongodb']), {mongoManipulator}, C));
-  ep.entrypointRestStore = new EntrypointRestStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'entrypointStoreRest']), C));
+  let ep = lodash.mapValues(STORE_MAPPINGS, function(mappings, key) {
+    let clazz = require(util.format('../utilities/entrypoint-%s-store', key));
+    let refs = (key === "mongodb") ? {mongoManipulator} : {};
+    return new clazz(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', mappings.cfgname]), C, refs));
+  });
   let cachedStore = new CachedStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']), C));
 
   this.authenticate = function (data, opts) {
@@ -53,7 +50,7 @@ function Storage(params) {
         if (data[pluginCfg.fieldNameRef.key]) {
           result[pluginCfg.fieldNameRef.key] = data[pluginCfg.fieldNameRef.key];
         }
-        result.store = entrypointName;
+        result.store = STORE_MAPPINGS[entrypointName].label;
         return result;
       });
     }, cachedStore.authenticate(data, opts));

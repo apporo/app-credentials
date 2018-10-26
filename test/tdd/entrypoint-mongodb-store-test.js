@@ -2,10 +2,7 @@
 
 var Devebot = require('devebot');
 var Promise = Devebot.require('bluebird');
-var Injektor = Devebot.require('injektor');
-var chores = Devebot.require('chores');
 var lodash = Devebot.require('lodash');
-var loader = Devebot.require('loader');
 var assert = require('chai').assert;
 var path = require('path');
 var util = require('util');
