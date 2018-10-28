@@ -42,14 +42,16 @@ function Storage(params) {
       entrypoints = opts.entrypoints;
     } 
 
-    let p = Promise.reduce(entrypoints, function (result, entrypointName) {
-      if (!(entrypointName in ep)) return result;
-      if (result.status != null && result.status >= STATUS.OK) return result;
+    let p = Promise.reduce(entrypoints, function (accum, entrypointName) {
+      if (!(entrypointName in ep)) return accum;
+      if (accum.status != null && accum.status >= STATUS.OK) return accum;
       return ep[entrypointName].authenticate(data, opts).then(function (result) {
+        result.stores = accum.stores || [];
+        result.stores.push(entrypointName);
+        result.store = STORE_MAPPINGS[entrypointName].label;
         if (data[pluginCfg.fieldNameRef.key]) {
           result[pluginCfg.fieldNameRef.key] = data[pluginCfg.fieldNameRef.key];
         }
-        result.store = STORE_MAPPINGS[entrypointName].label;
         return result;
       });
     }, cachedStore.authenticate(data, opts));

@@ -35,6 +35,7 @@ describe('tdd:app-credentials:entrypoint-config-store', function() {
       });
       p = p.then(function(r) {
         assert.deepEqual(r, {
+          "stores": ["config"],
           "store":"entrypointConfigStore",
           "username":"static1",
           "status":0,
@@ -67,6 +68,7 @@ describe('tdd:app-credentials:entrypoint-config-store', function() {
         return Promise.reject(result);
       }, function(exception) {
         assert.deepEqual(exception, {
+          "stores": ["config"],
           "store": "entrypointConfigStore",
           "username": "static0",
           "status": STATUS.KEY_NOT_FOUND,
@@ -95,6 +97,7 @@ describe('tdd:app-credentials:entrypoint-config-store', function() {
         return Promise.reject(result);
       }, function(exception) {
         assert.deepEqual(exception, {
+          "stores": ["config"],
           "store": "entrypointConfigStore",
           "username": "static3",
           "status": STATUS.SECRET_INCORRECT,

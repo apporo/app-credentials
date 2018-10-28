@@ -7,6 +7,7 @@ var assert = require('chai').assert;
 var path = require('path');
 var util = require('util');
 var envmask = require('envmask').instance;
+var STATUS = require('../../lib/utilities/common-status');
 
 var ACCOUNT_COLLECTION_NAME = 'OAuthAppAccessTokens';
 var DATASET = [
@@ -76,9 +77,10 @@ describe('tdd:app-credentials:entrypoint-mongodb-store', function() {
       });
       p = p.then(function(r) {
         assert.deepEqual(r, {
+          "stores": ["config", "file", "mongodb"],
+          "status": STATUS.OK,
           "accessToken":"1880cf98ea96af558f49eb5dd49a6a97f47c8bab",
           "expires":"2018-10-29T08:50:21.716Z",
-          "status":0,
           "store":"entrypointMongodbStore"
         });
         false && console.log('Result: ', JSON.stringify(r));
@@ -106,9 +108,10 @@ describe('tdd:app-credentials:entrypoint-mongodb-store', function() {
       p = p.catch(function(exception) {
         false && console.log('Exception: ', JSON.stringify(exception));
         assert.deepEqual(exception, {
+          "stores": ["config", "file", "mongodb"],
           "accessToken":"0880cf98ea96af558f49eb5dd49a6a97f47c8baa",
           "expires":"2018-10-24T08:50:21.716Z",
-          "status":3,
+          "status": STATUS.HAS_EXPIRED,
           "store":"entrypointMongodbStore"
         });
         return Promise.resolve(exception);
@@ -119,41 +122,41 @@ describe('tdd:app-credentials:entrypoint-mongodb-store', function() {
     flow.asCallback(done);
   });
 
-  // it.only('failed if access-token is not found', function(done) {
-  //   var app = require(path.join(__dirname, '../app'));
-  //   var flow = app.server.start()
-  //   flow = flow.then(function(info) {
-  //     var mongoManipulator = app.server.getSandboxService('mongojs#manipulator');
-  //     var sub = Promise.resolve();
-  //     sub = sub.then(function() {
-  //       return mongoManipulator.deleteDocument(ACCOUNT_COLLECTION_NAME, {});
-  //     })
-  //     sub = sub.then(function(info) {
-  //       return mongoManipulator.insertDocument(ACCOUNT_COLLECTION_NAME, DATASET);
-  //     });
-  //     return sub;
-  //   }).delay(10)
-  //   flow = flow.then(function(info) {
-  //     var storageService = app.server.getSandboxService('storage');
-  //     var p = storageService.authenticate({
-  //       accessToken: 'this-is-a-not-found-access-token'
-  //     }, {
-  //       type: 'access-token'
-  //     });
-  //     p = p.catch(function(exception) {
-  //       true && console.log('Exception: ', JSON.stringify(exception));
-  //       assert.deepEqual(exception, {
-  //         "accessToken":"0880cf98ea96af558f49eb5dd49a6a97f47c8baa",
-  //         "expires":"2018-10-24T08:50:21.716Z",
-  //         "status":3,
-  //         "store":"entrypointMongodbStore"
-  //       });
-  //       return Promise.resolve(exception);
-  //     });
-  //     return p;
-  //   }).delay(10)
-  //   flow.asCallback(done)
-  // });
+  it('failed if access-token is not found', function(done) {
+    var app = require(path.join(__dirname, '../app'));
+    var flow = app.server.start()
+    flow = flow.then(function(info) {
+      var mongoManipulator = app.server.getSandboxService('mongojs#manipulator');
+      var sub = Promise.resolve();
+      sub = sub.then(function() {
+        return mongoManipulator.deleteDocument(ACCOUNT_COLLECTION_NAME, {});
+      })
+      sub = sub.then(function(info) {
+        return mongoManipulator.insertDocument(ACCOUNT_COLLECTION_NAME, DATASET);
+      });
+      return sub;
+    }).delay(10)
+    flow = flow.then(function(info) {
+      var storageService = app.server.getSandboxService('storage');
+      var p = storageService.authenticate({
+        accessToken: 'this-is-a-not-found-access-token'
+      }, {
+        entrypoints: ["mongodb"],
+        type: 'access-token'
+      });
+      p = p.catch(function(exception) {
+        false && console.log('Exception: ', JSON.stringify(exception));
+        assert.deepEqual(exception, {
+          "status": STATUS.KEY_NOT_FOUND,
+          "stores": [ "mongodb" ],
+          "store":"entrypointMongodbStore"
+        });
+        return Promise.resolve(exception);
+      });
+      return p;
+    }).delay(10)
+    flow.asCallback(done)
+  });
 
   after(function(done) {
     envmask.reset();

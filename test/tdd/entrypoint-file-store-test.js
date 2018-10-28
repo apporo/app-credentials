@@ -35,6 +35,7 @@ describe('tdd:app-credentials:entrypoint-file-store', function() {
       });
       p = p.then(function(r) {
         assert.deepEqual(r, {
+          "stores": ["config", "file"],
           "store":"entrypointFileStore",
           "username":"operator",
           "status": STATUS.OK,
@@ -67,6 +68,7 @@ describe('tdd:app-credentials:entrypoint-file-store', function() {
         return Promise.reject(result);
       }, function(exception) {
         assert.deepEqual(exception, {
+          "stores": ["file"],
           "store": "entrypointFileStore",
           "username": "notfound",
           "status": STATUS.KEY_NOT_FOUND,
@@ -95,6 +97,7 @@ describe('tdd:app-credentials:entrypoint-file-store', function() {
         return Promise.reject(result);
       }, function(exception) {
         assert.deepEqual(exception, {
+          "stores": ["file"],
           "store": "entrypointFileStore",
           "username": "operator",
           "status": STATUS.SECRET_INCORRECT,
