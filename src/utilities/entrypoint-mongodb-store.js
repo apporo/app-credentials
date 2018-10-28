@@ -47,7 +47,7 @@ function EntrypointMongodbStore(params) {
           r[expiredTimeFieldName] = expired.toISOString();
         }
       } else {
-        r = { status: STATUS.USER_NOT_IN_STORE };
+        r = { status: STATUS.KEY_NOT_IN_STORE };
       }
       return r;
     });

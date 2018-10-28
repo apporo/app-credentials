@@ -5,5 +5,5 @@
 ### Generate password
 
 ```
-node --eval "console.log(require('bcryptjs').hashSync('mypassword', 10))"
+node --eval "console.log(require('bcryptjs').hashSync('changeme', 10))"
 ```

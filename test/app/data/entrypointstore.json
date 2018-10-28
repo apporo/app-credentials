@@ -2,11 +2,11 @@
 	"entrypoints": [
     {
 			"key": "operator",
-			"secret": "$2a$10$hl4zIIfRYkI752hmVSm5yutLmqDk6FFQcqTDBgZocXH5uTUosDUnm"
+			"secret": "$2a$10$Ubaxto/zOiobAYMu8yUaV.T0tWCPAShOIrgHEZWexriHQKZrMYoOq"
 		},
 		{
 			"key": "demouser",
-			"secret": "$2a$10$oWnKP2qCtqwau7klj8P4NeCAf9cAQGGamKtP8/biF03VAr5mamdd2"
+			"secret": "$2a$10$o3jHEvSskDeOb1IXNz/e9.mu2Cf2YX1RLzG.k18z5bZ1kUw0EiPsm"
 		}
 	]
 }

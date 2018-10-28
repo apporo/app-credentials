@@ -61,7 +61,7 @@ function Storage(params) {
         return Promise.resolve(result);
       }
       if (result.status < 0) {
-        result.status = STATUS.USER_NOT_IN_STORE;
+        result.status = STATUS.KEY_NOT_IN_STORE;
       }
       if (result.status !== 0) return Promise.reject(result);
     });
