@@ -3,11 +3,10 @@
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
-const loader = Devebot.require('loader');
-const fs = require('fs');
 const util = require('util');
 const hideSecret = require('hide-secret');
 const CachedStore = require('../utilities/entrypoint-cached-store');
+const STATUS = require('../utilities/common-status');
 
 const STORE_MAPPINGS = {
   "config": { cfgname: "entrypointStore", label: "entrypointConfigStore" },
@@ -60,6 +59,9 @@ function Storage(params) {
       if (result.status === 0) {
         if (result.type != 'token') cachedStore.update(data, result);
         return Promise.resolve(result);
+      }
+      if (result.status < 0) {
+        result.status = STATUS.USER_NOT_IN_STORE;
       }
       if (result.status !== 0) return Promise.reject(result);
     });
