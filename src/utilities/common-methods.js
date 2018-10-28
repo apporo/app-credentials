@@ -24,7 +24,7 @@ module.exports = {
           }
         } else {
           return {
-            status: STATUS.INCORRECT_SECRET,
+            status: STATUS.SECRET_INCORRECT,
             message: util.format('Authentication failed. Wrong [%s].', self.fieldNameRef.secret)
           }
         }

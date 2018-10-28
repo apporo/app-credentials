@@ -1,7 +1,7 @@
 module.exports = {
   OK: 0,
-  INCORRECT_SECRET: 1,
   KEY_NOT_FOUND: 2,
+  SECRET_INCORRECT: 1,
   HAS_EXPIRED: 3,
   KEY_NOT_IN_STORE: -2,
   REST_API_LIST_IS_EMPTY: -3,

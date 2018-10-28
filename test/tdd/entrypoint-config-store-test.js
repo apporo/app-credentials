@@ -9,7 +9,7 @@ var util = require('util');
 var envmask = require('envmask').instance;
 var STATUS = require('../../lib/utilities/common-status');
 
-describe('tdd:app-credentials:entrypoint-file-store', function() {
+describe('tdd:app-credentials:entrypoint-config-store', function() {
   this.timeout(60000);
 
   var app = require(path.join(__dirname, '../app'));
@@ -28,16 +28,16 @@ describe('tdd:app-credentials:entrypoint-file-store', function() {
     flow = flow.then(function(info) {
       var storageService = app.server.getSandboxService('storage');
       var p = storageService.authenticate({
-        username: 'operator',
-        password: 'changeme'
+        username: 'static1',
+        password: 'password'
       }, {
         type: 'user-password'
       });
       p = p.then(function(r) {
         assert.deepEqual(r, {
-          "store":"entrypointFileStore",
-          "username":"operator",
-          "status": STATUS.OK,
+          "store":"entrypointConfigStore",
+          "username":"static1",
+          "status":0,
           "message": "Successful authentication."
         });
         false && console.log('Result: ', JSON.stringify(r));
@@ -57,18 +57,18 @@ describe('tdd:app-credentials:entrypoint-file-store', function() {
     flow = flow.then(function(info) {
       var storageService = app.server.getSandboxService('storage');
       var p = storageService.authenticate({
-        username: 'notfound',
-        password: 'incorrected'
+        username: 'static0',
+        password: 'password'
       }, {
-        entrypoints: ['file'],
+        entrypoints: ['config'],
         type: 'user-password'
       });
       p = p.then(function(result) {
         return Promise.reject(result);
       }, function(exception) {
         assert.deepEqual(exception, {
-          "store": "entrypointFileStore",
-          "username": "notfound",
+          "store": "entrypointConfigStore",
+          "username": "static0",
           "status": STATUS.KEY_NOT_FOUND,
           "message": "Authentication failed. [username] not found."
         });
@@ -85,18 +85,18 @@ describe('tdd:app-credentials:entrypoint-file-store', function() {
     flow = flow.then(function(info) {
       var storageService = app.server.getSandboxService('storage');
       var p = storageService.authenticate({
-        username: 'operator',
+        username: 'static3',
         password: 'incorrected'
       }, {
-        entrypoints: ['file'],
+        entrypoints: ['config'],
         type: 'user-password'
       });
       p = p.then(function(result) {
         return Promise.reject(result);
       }, function(exception) {
         assert.deepEqual(exception, {
-          "store": "entrypointFileStore",
-          "username": "operator",
+          "store": "entrypointConfigStore",
+          "username": "static3",
           "status": STATUS.SECRET_INCORRECT,
           "message": "Authentication failed. Wrong [password]."
         });

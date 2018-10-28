@@ -44,7 +44,7 @@ function Storage(params) {
 
     let p = Promise.reduce(entrypoints, function (result, entrypointName) {
       if (!(entrypointName in ep)) return result;
-      if (result.status != null && result.status >= 0) return result;
+      if (result.status != null && result.status >= STATUS.OK) return result;
       return ep[entrypointName].authenticate(data, opts).then(function (result) {
         if (data[pluginCfg.fieldNameRef.key]) {
           result[pluginCfg.fieldNameRef.key] = data[pluginCfg.fieldNameRef.key];
@@ -56,14 +56,14 @@ function Storage(params) {
 
     p = p.then(function (result) {
       L.has('silly') && L.log('silly', 'final check: %s', JSON.stringify(result));
-      if (result.status === 0) {
+      if (result.status === STATUS.OK) {
         if (result.type != 'token') cachedStore.update(data, result);
         return Promise.resolve(result);
       }
-      if (result.status < 0) {
-        result.status = STATUS.KEY_NOT_IN_STORE;
+      if (result.status < STATUS.OK) {
+        result.status = STATUS.KEY_NOT_FOUND;
       }
-      if (result.status !== 0) return Promise.reject(result);
+      if (result.status !== STATUS.OK) return Promise.reject(result);
     });
 
     return p;
@@ -76,13 +76,13 @@ function Storage(params) {
 
     result = ep.entrypointConfigStore.getApiSecret(data, opts);
     result.store = 'entrypointConfigStore';
-    if (result.status == 0) {
+    if (result.status == STATUS.OK) {
       return Promise.resolve(result);
     }
 
     result = ep.entrypointFileStore.getApiSecret(data, opts);
     result.store = 'entrypointFileStore';
-    if (result.status == 0) {
+    if (result.status == STATUS.OK) {
       return Promise.resolve(result);
     }
 
