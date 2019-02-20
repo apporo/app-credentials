@@ -48,6 +48,30 @@ function EntrypointConfigStore(params) {
     }
   };
 
+  this.getCredentials = function(data, opts) {
+    let self = this;
+    data = data || {};
+    opts = opts || {};
+    if (opts.type === 'key-secret') {
+      let entrypointItem = self.entrypointHash[data[self.fieldNameRef.key]];
+      if (entrypointItem) {
+        let output = { status: STATUS.OK };
+        lodash.forEach(['key', 'secret', 'token'], function(name) {
+          if (entrypointItem[name] != null) {
+            output[sef.fieldNameRef[name]] = entrypointItem[name];
+          }
+        });
+        return output;
+      } else {
+        let output = { status: STATUS.KEY_NOT_IN_STORE };
+        output[self.fieldNameRef.key] = data[self.fieldNameRef.key];
+        return output;
+      }
+    } else {
+      
+    }
+  };
+
   this.getApiSecret = function(data, opts) {
     let that = this;
     data = data || {};

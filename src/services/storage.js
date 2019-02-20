@@ -59,13 +59,19 @@ function Storage(params) {
     p = p.then(function (result) {
       L.has('silly') && L.log('silly', 'final check: %s', JSON.stringify(result));
       if (result.status === STATUS.OK) {
-        if (result.type != 'token') cachedStore.update(data, result);
+        if (opts.type != 'access-token') cachedStore.update(data, result);
         return Promise.resolve(result);
       }
       if (result.status < STATUS.OK) {
         result.status = STATUS.KEY_NOT_FOUND;
       }
       if (result.status !== STATUS.OK) return Promise.reject(result);
+    });
+
+    p = p.catch(function(exception) {
+      L.has('error') && L.log('error', 'authentication has been failed: [%s] - [%s]',
+          exception.name, exception.message);
+      return Promise.reject(exception);
     });
 
     return p;

@@ -25,6 +25,8 @@ function EntrypointCachedStore(params) {
 
   let getHashCode = function (text) {
     if (!self.secretEncrypted) return text;
+    text = (text != null) ? text : '';
+    text = (typeof(text) === 'string') ? text : text.toString();
     let hash = crypto.createHash('sha1');
     hash.update(text);
     return hash.digest('hex');

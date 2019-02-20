@@ -31,6 +31,7 @@ module.exports = {
       },
       entrypointStoreFile: require('path').join(__dirname, '../data/entrypointstore.json'),
       entrypointStoreMongodb: {
+        enabled: true,
         credentialsCollectionName: 'OAuthAppAccessTokens',
         tokenFieldName: 'accessToken',
         expiredTimeFieldName: 'expires',
@@ -71,11 +72,7 @@ module.exports = {
     mongojs: {
       appCredentials: {
         manipulator: {
-          connection_options: {
-            host: '127.0.0.1',
-            port: 28018,
-            name: 'app-credentials'
-          }
+          connection_string: "mongodb://localhost:28018/?readPreference=nearest",
         }
       }
     }

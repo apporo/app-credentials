@@ -34,7 +34,7 @@ var DATASET = [
     "fleetId" : "vileh",
     "phone" : "+84935236987",
     "appType" : "passenger",
-    "expires" : new Date("2018-10-29T08:50:21.716Z"),
+    "expires" : new Date("2019-10-29T08:50:21.716Z"),
     "createdDate" : new Date("2018-10-24T08:50:21.743Z")
   }
 ];
@@ -80,7 +80,7 @@ describe('tdd:app-credentials:entrypoint-mongodb-store', function() {
           "stores": ["config", "file", "mongodb"],
           "status": STATUS.OK,
           "accessToken":"1880cf98ea96af558f49eb5dd49a6a97f47c8bab",
-          "expires":"2018-10-29T08:50:21.716Z",
+          "expires":"2019-10-29T08:50:21.716Z",
           "store":"entrypointMongodbStore"
         });
         false && console.log('Result: ', JSON.stringify(r));
