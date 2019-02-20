@@ -26,7 +26,15 @@ function Storage(params) {
 
   let mongoManipulator = params["mongojs#manipulator"];
 
-  let ep = lodash.mapValues(STORE_MAPPINGS, function(mappings, key) {
+  let stores = lodash.pickBy(STORE_MAPPINGS, function(mappings, key) {
+    const cfg = pluginCfg[mappings.cfgname];
+    if (cfg && cfg.enabled !== false) {
+      return true;
+    }
+    return false;
+  })
+
+  let ep = lodash.mapValues(stores, function(mappings, key) {
     let clazz = require(util.format('../utilities/entrypoint-%s-store', key));
     let refs = (key === "mongodb") ? {mongoManipulator} : {};
     return new clazz(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', mappings.cfgname]), C, refs));

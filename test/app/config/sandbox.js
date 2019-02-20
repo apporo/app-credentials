@@ -31,7 +31,7 @@ module.exports = {
       },
       entrypointStoreFile: require('path').join(__dirname, '../data/entrypointstore.json'),
       entrypointStoreMongodb: {
-        enabled: true,
+        enabled: false,
         credentialsCollectionName: 'OAuthAppAccessTokens',
         tokenFieldName: 'accessToken',
         expiredTimeFieldName: 'expires',
