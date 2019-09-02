@@ -1,6 +1,6 @@
 {
   "name": "app-credentials",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Devebot credentials store layerware",
   "license": "MIT",
   "homepage": "https://github.com/apporo/app-credentials.git",
@@ -32,13 +32,13 @@
     "devebot-plugin"
   ],
   "peerDependencies": {
-    "devebot": "^0.2.6",
-    "devebot-co-mongojs": "^0.2.0"
+    "devebot": "^0.3.0",
+    "devebot-co-mongojs": "^0.3.0"
   },
   "dependencies": {
     "bcryptjs": "^2.3.0",
-    "devebot": "^0.2.6",
-    "devebot-co-mongojs": "^0.2.0",
+    "devebot": "^0.3.0",
+    "devebot-co-mongojs": "^0.3.0",
     "hide-secret": "^0.1.2",
     "node-cache": "^4.1.1",
     "node-fetch": "^2.2.0",

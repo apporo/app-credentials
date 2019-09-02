@@ -15,16 +15,13 @@ const STORE_MAPPINGS = {
   "rest": { cfgname: "entrypointStoreRest", label: "entrypointRestStore" }
 }
 
-function Storage(params) {
-  params = params || {};
-
-  let self = this;
-  let L = params.loggingFactory.getLogger();
-  let T = params.loggingFactory.getTracer();
-  let C = { L, T };
+function Storage(params = {}) {
+  const L = params.loggingFactory.getLogger();
+  const T = params.loggingFactory.getTracer();
+  const C = { L, T };
   let pluginCfg = params.sandboxConfig || {};
 
-  let mongoManipulator = params["mongojs#manipulator"];
+  const { mongoManipulator } = params;
 
   let stores = lodash.pickBy(STORE_MAPPINGS, function(mappings, key) {
     const cfg = pluginCfg[mappings.cfgname];
@@ -109,6 +106,8 @@ function Storage(params) {
   };
 };
 
-Storage.referenceList = ["mongojs#manipulator"];
+Storage.referenceHash = {
+  mongoManipulator: "mongojs#manipulator"
+};
 
 module.exports = Storage;

@@ -4,12 +4,9 @@ const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
 const lodash = Devebot.require('lodash');
 
-function Checker(params) {
-  params = params || {};
-
-  let self = this;
-  let L = params.loggingFactory.getLogger();
-  let T = params.loggingFactory.getTracer();
+function Checker(params = {}) {
+  const L = params.loggingFactory.getLogger();
+  const T = params.loggingFactory.getTracer();
   let pluginCfg = params.sandboxConfig;
   let authorizationCfg = pluginCfg.authorization || {};
 

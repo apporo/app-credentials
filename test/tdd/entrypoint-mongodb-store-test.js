@@ -62,6 +62,10 @@ describe('tdd:app-credentials:entrypoint-mongodb-store', function() {
     flow = flow.then(function(info) {
       return mongoManipulator.insertDocument(ACCOUNT_COLLECTION_NAME, DATASET);
     });
+    flow = flow.then(function(result) {
+      false && console.log("Result: %s", JSON.stringify(result, null, 2));
+      return result;
+    })
     flow = flow.delay(10);
     flow.asCallback(done);
   })

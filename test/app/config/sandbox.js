@@ -72,7 +72,7 @@ module.exports = {
     mongojs: {
       appCredentials: {
         manipulator: {
-          connection_string: "mongodb://localhost:28018/?readPreference=nearest",
+          connection_string: "mongodb://localhost:27017/test",
         }
       }
     }

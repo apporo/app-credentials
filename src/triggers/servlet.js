@@ -2,12 +2,9 @@
 
 const Devebot = require('devebot');
 const Promise = Devebot.require('bluebird');
-const lodash = Devebot.require('lodash');
 
-function Servlet(params) {
-  params = params || {};
-
-  let mongoManipulator = params["mongojs#manipulator"];
+function Servlet(params = {}) {
+  const { mongoManipulator } = params;
 
   this.start = function() {
     return Promise.resolve();
@@ -18,6 +15,8 @@ function Servlet(params) {
   };
 };
 
-Servlet.referenceList = [ "mongojs#manipulator" ];
+Servlet.referenceHash = {
+  mongoManipulator: "mongojs#manipulator"
+};
 
 module.exports = Servlet;
