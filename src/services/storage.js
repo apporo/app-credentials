@@ -12,6 +12,7 @@ const STORE_MAPPINGS = {
   "config": { cfgname: "entrypointStore", label: "entrypointConfigStore" },
   "file": { cfgname: "entrypointStoreFile", label: "entrypointFileStore" },
   "mongodb": { cfgname: "entrypointStoreMongodb", label: "entrypointMongodbStore" },
+  "mongodp": { cfgname: "entrypointStoreMongodp", label: "entrypointMongodpStore" },
   "rest": { cfgname: "entrypointStoreRest", label: "entrypointRestStore" }
 }
 
@@ -36,7 +37,7 @@ function Storage(params) {
 
   let ep = lodash.mapValues(stores, function(mappings, key) {
     let clazz = require(util.format('../utilities/entrypoint-%s-store', key));
-    let refs = (key === "mongodb") ? {mongoManipulator} : {};
+    let refs = (key === "mongodb" || key === "mongodp") ? {mongoManipulator} : {};
     return new clazz(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', mappings.cfgname]), C, refs));
   });
   let cachedStore = new CachedStore(lodash.assign(lodash.pick(pluginCfg, ['fieldNameRef', 'secretEncrypted']), C));
