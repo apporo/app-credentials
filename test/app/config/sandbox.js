@@ -37,6 +37,13 @@ module.exports = {
         expiredTimeFieldName: 'expires',
         returnedFieldNames: ['accessToken', 'expires']
       },
+      entrypointStoreMongodp: {
+        enabled: false,
+        credentialsCollectionName: 'OAuthAppAccessTokens',
+        tokenFieldName: 'accessToken',
+        expiredTimeFieldName: 'expires',
+        returnedFieldNames: ['accessToken', 'expires']
+      },
       entrypointStoreRest: {
         sources: [
           {
